@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Search, Plus, Bell, User } from "lucide-react";
+import { Search, Plus, Bell, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "./AuthProvider";
 import AddContentModal from "./AddContentModal";
 
 const Header = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <>
@@ -56,9 +59,23 @@ const Header = () => {
               <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-primary" />
             </Button>
 
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center cursor-pointer hover:shadow-glow transition-smooth">
-              <User className="h-4 w-4 text-white" />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center cursor-pointer hover:shadow-glow transition-smooth">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="p-2 border-b">
+                  <p className="text-sm font-medium">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground">Curator User</p>
+                </div>
+                <DropdownMenuItem onClick={signOut} className="text-red-600">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

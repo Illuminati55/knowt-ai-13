@@ -16,12 +16,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useContent } from "@/hooks/useContent";
 import AddContentModal from "./AddContentModal";
+import AIInsightsModal from "./AIInsightsModal";
 
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [expandedSections, setExpandedSections] = useState(["collections"]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isInsightsModalOpen, setIsInsightsModalOpen] = useState(false);
+  const { content, collections } = useContent();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
@@ -34,23 +38,20 @@ const Sidebar = () => {
   const navigationItems = [
     { id: "dashboard", label: "Dashboard", icon: Home, count: null },
     { id: "recent", label: "Recent", icon: Clock, count: null },
-    { id: "favorites", label: "Favorites", icon: Star, count: 24 },
-    { id: "all-items", label: "All Items", icon: BookOpen, count: 156 },
-  ];
-
-  const collections = [
-    { id: "ai-research", name: "AI Research", color: "bg-blue-500", count: 23 },
-    { id: "design-inspiration", name: "Design Inspiration", color: "bg-purple-500", count: 18 },
-    { id: "productivity", name: "Productivity", color: "bg-green-500", count: 31 },
-    { id: "learning", name: "Learning Resources", color: "bg-orange-500", count: 42 },
+    { id: "favorites", label: "Favorites", icon: Star, count: content.filter(item => item.is_favorite).length },
+    { id: "all-items", label: "All Items", icon: BookOpen, count: content.length },
   ];
 
   const sources = [
-    { id: "web", name: "Web Articles", icon: Globe, count: 89 },
-    { id: "documents", name: "Documents", icon: FileText, count: 34 },
-    { id: "youtube", name: "YouTube", icon: Youtube, count: 23 },
-    { id: "linkedin", name: "LinkedIn", icon: Linkedin, count: 10 },
+    { id: "web", name: "Web Articles", icon: Globe, count: content.filter(item => item.source === 'web').length },
+    { id: "documents", name: "Documents", icon: FileText, count: content.filter(item => item.source === 'document').length },
+    { id: "youtube", name: "YouTube", icon: Youtube, count: content.filter(item => item.source === 'youtube').length },
+    { id: "linkedin", name: "LinkedIn", icon: Linkedin, count: content.filter(item => item.source === 'linkedin').length },
   ];
+
+  const processingCount = content.filter(item => 
+    item.processing_status === 'processing' || item.processing_status === 'pending'
+  ).length;
 
   return (
     <>
@@ -66,7 +67,7 @@ const Sidebar = () => {
               <Plus className="h-4 w-4 mr-2" />
               Add New Content
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => setIsInsightsModalOpen(true)}>
               <Zap className="h-4 w-4 mr-2" />
               AI Insights
             </Button>
@@ -111,10 +112,10 @@ const Sidebar = () => {
               <div className="space-y-1 pl-6">
                 {collections.map((collection) => (
                   <div key={collection.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-smooth">
-                    <div className={`h-3 w-3 rounded-full ${collection.color}`} />
+                    <div className={`h-3 w-3 rounded-full`} style={{ backgroundColor: collection.color }} />
                     <span className="text-sm flex-1">{collection.name}</span>
                     <Badge variant="outline" className="text-xs">
-                      {collection.count}
+                      {collection.item_count}
                     </Badge>
                   </div>
                 ))}
@@ -163,7 +164,10 @@ const Sidebar = () => {
               <span className="text-sm font-medium">AI Processing</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              3 items being analyzed for insights and tags
+              {processingCount > 0 
+                ? `${processingCount} items being analyzed for insights and tags`
+                : 'All content processed and ready'
+              }
             </p>
           </div>
 
@@ -173,6 +177,11 @@ const Sidebar = () => {
       <AddContentModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+      
+      <AIInsightsModal 
+        isOpen={isInsightsModalOpen} 
+        onClose={() => setIsInsightsModalOpen(false)} 
       />
     </>
   );

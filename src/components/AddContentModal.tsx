@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useContent } from "@/hooks/useContent";
+import { toast } from "@/hooks/use-toast";
 
 interface AddContentModalProps {
   isOpen: boolean;
@@ -17,18 +19,35 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const { addContent } = useContent();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!url.trim()) return;
+    
     setIsProcessing(true);
     
-    // Simulate processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      onClose();
+    try {
+      await addContent(url.trim(), notes.trim() || undefined);
+      
+      toast({
+        title: "Content added successfully!",
+        description: "AI is now analyzing your content for insights and tags.",
+      });
+      
+      // Reset form and close modal
       setUrl("");
       setNotes("");
-    }, 2000);
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error adding content",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const detectSource = (url: string) => {

@@ -1,7 +1,8 @@
-import { Clock, ExternalLink, FileText, Globe, Youtube, Linkedin, Zap, Tag, Star } from "lucide-react";
+import { Clock, ExternalLink, FileText, Globe, Youtube, Linkedin, Zap, Tag, Star, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useContent } from "@/hooks/useContent";
 
 interface ContentCardProps {
   id: string;
@@ -17,6 +18,7 @@ interface ContentCardProps {
 }
 
 const ContentCard = ({
+  id,
   title,
   summary,
   url,
@@ -25,8 +27,10 @@ const ContentCard = ({
   createdAt,
   processingStatus,
   thumbnail,
-  keyTakeaways
+  keyTakeaways,
+  is_favorite
 }: ContentCardProps) => {
+  const { toggleFavorite, deleteContent } = useContent();
   const getSourceIcon = (source: string) => {
     switch (source) {
       case "web": return Globe;
@@ -135,8 +139,21 @@ const ContentCard = ({
           </div>
           
           <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth">
-              <Star className="h-3 w-3" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth ${is_favorite ? 'text-yellow-500 opacity-100' : ''}`}
+              onClick={() => toggleFavorite(id)}
+            >
+              <Star className={`h-3 w-3 ${is_favorite ? 'fill-current' : ''}`} />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth text-red-500"
+              onClick={() => deleteContent(id)}
+            >
+              <Trash2 className="h-3 w-3" />
             </Button>
             {url && (
               <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth">

@@ -2,99 +2,34 @@ import { useState } from "react";
 import { LayoutGrid, List, Filter, SortAsc } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useContent, ContentItem } from "@/hooks/useContent";
 import ContentCard from "./ContentCard";
 
 const Dashboard = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedFilter, setSelectedFilter] = useState("all");
-
-  // Mock data for demonstration
-  const mockItems = [
-    {
-      id: "1",
-      title: "The Future of AI in Knowledge Management Systems",
-      summary: "An in-depth analysis of how artificial intelligence is revolutionizing the way we capture, organize, and retrieve information. This comprehensive guide covers machine learning algorithms, natural language processing, and the emerging trends in AI-powered productivity tools.",
-      url: "https://example.com/ai-knowledge-management",
-      source: "web" as const,
-      tags: ["AI", "Knowledge Management", "Productivity", "Machine Learning"],
-      createdAt: "2 hours ago",
-      processingStatus: "completed" as const,
-      keyTakeaways: [
-        "AI can reduce information retrieval time by up to 70%",
-        "Natural language queries are becoming the standard for search",
-        "Automated tagging accuracy has improved to 95% with modern models"
-      ]
-    },
-    {
-      id: "2", 
-      title: "Building Scalable React Applications with TypeScript",
-      summary: "A comprehensive guide to architecting large-scale React applications using TypeScript. Covers best practices, design patterns, and performance optimization strategies for modern web development.",
-      source: "youtube" as const,
-      tags: ["React", "TypeScript", "Web Development", "Architecture"],
-      createdAt: "5 hours ago",
-      processingStatus: "processing" as const,
-    },
-    {
-      id: "3",
-      title: "Design Systems: Creating Consistent User Experiences",
-      summary: "Learn how to build and maintain design systems that scale across products and teams. This document covers component libraries, design tokens, and collaboration strategies.",
-      source: "document" as const,
-      tags: ["Design Systems", "UI/UX", "Frontend"],
-      createdAt: "1 day ago",
-      processingStatus: "completed" as const,
-      keyTakeaways: [
-        "Design systems reduce development time by 40%",
-        "Consistency improves user satisfaction scores significantly",
-        "Proper documentation is key to adoption success"
-      ]
-    },
-    {
-      id: "4",
-      title: "The Psychology of User Interface Design",
-      summary: "Understanding cognitive psychology principles that make interfaces intuitive and user-friendly. Explore color theory, cognitive load, and user behavior patterns.",
-      url: "https://linkedin.com/pulse/psychology-ui-design",
-      source: "linkedin" as const,
-      tags: ["Psychology", "UI Design", "User Experience"],
-      createdAt: "2 days ago",
-      processingStatus: "pending" as const,
-    },
-    {
-      id: "5",
-      title: "Advanced CSS Grid Techniques for Modern Layouts",
-      summary: "Master CSS Grid with practical examples and advanced techniques. Learn how to create complex, responsive layouts that adapt to any screen size and device.",
-      source: "web" as const,
-      tags: ["CSS", "Web Design", "Frontend", "Responsive Design"],
-      createdAt: "3 days ago", 
-      processingStatus: "completed" as const,
-      keyTakeaways: [
-        "CSS Grid reduces layout code complexity by 60%",
-        "Subgrid support is now available in all major browsers",
-        "Combining Grid with Flexbox creates powerful layout systems"
-      ]
-    },
-    {
-      id: "6",
-      title: "Machine Learning for Beginners: A Practical Introduction",
-      summary: "Start your journey into machine learning with this beginner-friendly guide. Covers fundamental concepts, algorithms, and hands-on projects to build your first ML models.",
-      source: "document" as const,
-      tags: ["Machine Learning", "AI", "Beginners", "Data Science"],
-      createdAt: "1 week ago",
-      processingStatus: "failed" as const,
-    }
-  ];
+  const { content, loading } = useContent();
 
   const filters = [
-    { id: "all", label: "All Items", count: mockItems.length },
-    { id: "completed", label: "AI Processed", count: mockItems.filter(item => item.processingStatus === "completed").length },
-    { id: "processing", label: "Processing", count: mockItems.filter(item => item.processingStatus === "processing").length },
-    { id: "recent", label: "Recent", count: mockItems.filter(item => item.createdAt.includes("hour") || item.createdAt.includes("day")).length },
+    { id: "all", label: "All Items", count: content.length },
+    { id: "completed", label: "AI Processed", count: content.filter(item => item.processing_status === "completed").length },
+    { id: "processing", label: "Processing", count: content.filter(item => item.processing_status === "processing").length },
+    { id: "recent", label: "Recent", count: content.filter(item => {
+      const createdDate = new Date(item.created_at);
+      const daysDiff = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+      return daysDiff <= 7;
+    }).length },
   ];
 
-  const filteredItems = mockItems.filter(item => {
+  const filteredItems = content.filter(item => {
     if (selectedFilter === "all") return true;
-    if (selectedFilter === "completed") return item.processingStatus === "completed";
-    if (selectedFilter === "processing") return item.processingStatus === "processing";
-    if (selectedFilter === "recent") return item.createdAt.includes("hour") || item.createdAt.includes("day");
+    if (selectedFilter === "completed") return item.processing_status === "completed";
+    if (selectedFilter === "processing") return item.processing_status === "processing";
+    if (selectedFilter === "recent") {
+      const createdDate = new Date(item.created_at);
+      const daysDiff = (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+      return daysDiff <= 7;
+    }
     return true;
   });
 
@@ -109,7 +44,7 @@ const Dashboard = () => {
               Your Knowledge Base
             </h1>
             <p className="text-muted-foreground mt-1">
-              {mockItems.length} items curated and organized by AI
+              {content.length} items curated and organized by AI
             </p>
           </div>
           
@@ -166,16 +101,32 @@ const Dashboard = () => {
       </div>
 
       {/* Content Grid */}
-      <div className={`
-        ${viewMode === "grid" 
-          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
-          : "space-y-3"
-        }
-      `}>
-        {filteredItems.map((item) => (
-          <ContentCard key={item.id} {...item} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading your content...</p>
+          </div>
+        </div>
+      ) : (
+        <div className={`
+          ${viewMode === "grid" 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
+            : "space-y-3"
+          }
+        `}>
+          {filteredItems.map((item) => (
+            <ContentCard 
+              key={item.id} 
+              {...item}
+              source={item.source as "web" | "youtube" | "linkedin" | "document"}
+              createdAt={new Date(item.created_at).toLocaleDateString()}
+              processingStatus={item.processing_status}
+              keyTakeaways={item.key_takeaways}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredItems.length === 0 && (
