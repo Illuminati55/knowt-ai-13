@@ -143,72 +143,105 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
   const filteredItems = getFilteredItems();
 
   return (
-    <main className="flex-1 p-3 md:p-6 space-y-4 md:space-y-6 max-h-screen overflow-y-auto">
+    <main className="flex-1 p-4 lg:p-6 space-y-6 max-h-screen overflow-y-auto">
       
       {/* Header Section */}
-      <div className="space-y-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+      <div className="space-y-4 mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
           <div>
-            <h1 className="text-3xl font-semibold text-foreground">
+            <h1 className="text-xl lg:text-2xl font-semibold text-foreground">
               Curator AI
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-xs lg:text-sm text-muted-foreground mt-1">
               {content.length} items curated and organized by AI
             </p>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Source
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {sourceFilters.map(source => (
-                  <DropdownMenuItem 
-                    key={source.id} 
-                    onClick={() => setSelectedSource(source.id)}
-                  >
-                    {source.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {allTags.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Tags
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="max-h-48 overflow-y-auto">
-                  <DropdownMenuItem onClick={() => setSelectedTag("")}>
-                    All Tags
-                  </DropdownMenuItem>
-                  {allTags.map(tag => (
-                    <DropdownMenuItem 
-                      key={tag} 
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      {tag}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+          <div className="flex flex-wrap items-center gap-2 lg:gap-2">
+            <div className="flex items-center border rounded-lg p-1">
+              <Button
+                variant={viewMode === "grid" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 lg:h-8 w-7 lg:w-8 p-0"
+                onClick={() => setViewMode("grid")}
+                title="Grid View"
+              >
+                <LayoutGrid className="h-3 lg:h-4 w-3 lg:w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "tiles" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 lg:h-8 w-7 lg:w-8 p-0"
+                onClick={() => setViewMode("tiles")}
+                title="Tile View"
+              >
+                <Grid3X3 className="h-3 lg:h-4 w-3 lg:w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 lg:h-8 w-7 lg:w-8 p-0"
+                onClick={() => setViewMode("list")}
+                title="List View"
+              >
+                <List className="h-3 lg:h-4 w-3 lg:w-4" />
+              </Button>
+            </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <SortAsc className="h-4 w-4 mr-2" />
-                  Sort
+                <Button variant="outline" size="sm" className="text-xs lg:text-sm">
+                  <Filter className="h-3 lg:h-4 w-3 lg:w-4 mr-1 lg:mr-2" />
+                  <span className="hidden sm:inline">Filter</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="p-2">
+                  <h4 className="text-sm font-medium mb-2">Source</h4>
+                  {sourceFilters.map(source => (
+                    <DropdownMenuItem 
+                      key={source.id} 
+                      onClick={() => setSelectedSource(source.id)}
+                      className={selectedSource === source.id ? "bg-accent" : ""}
+                    >
+                      {source.label}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+                
+                {allTags.length > 0 && (
+                  <div className="border-t p-2">
+                    <h4 className="text-sm font-medium mb-2">Tags</h4>
+                    <div className="max-h-32 overflow-y-auto">
+                      <DropdownMenuItem 
+                        onClick={() => setSelectedTag("")}
+                        className={!selectedTag ? "bg-accent" : ""}
+                      >
+                        All Tags
+                      </DropdownMenuItem>
+                      {allTags.slice(0, 10).map(tag => (
+                        <DropdownMenuItem 
+                          key={tag} 
+                          onClick={() => setSelectedTag(tag)}
+                          className={selectedTag === tag ? "bg-accent" : ""}
+                        >
+                          {tag}
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="text-xs lg:text-sm">
+                  <SortAsc className="h-3 lg:h-4 w-3 lg:w-4 mr-1 lg:mr-2" />
+                  <span className="hidden sm:inline">Sort</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setSortBy("created_at")}>
                   Date Created
                 </DropdownMenuItem>
@@ -218,57 +251,24 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
                 <DropdownMenuItem onClick={() => setSortBy("processing_status")}>
                   Status
                 </DropdownMenuItem>
+                <div className="border-t mt-1 pt-1">
+                  <DropdownMenuItem onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+                    {sortOrder === "asc" ? "Ascending" : "Descending"}
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-            >
-              {sortOrder === "asc" ? "↑" : "↓"}
-            </Button>
             
             {viewMode === "grid" && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowCardSettings(!showCardSettings)}
+                className="hidden lg:inline-flex"
               >
-                <Settings className="h-4 w-4 mr-2" />
-                Customize
+                <Settings className="h-4 w-4" />
               </Button>
             )}
-            
-            <div className="flex items-center border rounded-lg p-1">
-              <Button
-                variant={viewMode === "grid" ? "secondary" : "ghost"}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setViewMode("grid")}
-                title="Grid View"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "tiles" ? "secondary" : "ghost"}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setViewMode("tiles")}
-                title="Tile View"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "secondary" : "ghost"}
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setViewMode("list")}
-                title="List View"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -284,7 +284,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             >
               {filter.label}
               <Badge 
-                variant={selectedFilter === filter.id ? "secondary" : "outline"}
+                variant="secondary"
                 className="ml-2 text-xs"
               >
                 {filter.count}
@@ -295,9 +295,9 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
 
         {/* Card Customization Panel */}
         {showCardSettings && viewMode === "grid" && (
-          <div className="p-4 bg-card border border-border rounded-lg">
-            <h3 className="font-medium mb-3">Customize Card Display</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-4 bg-card border rounded-lg">
+            <h3 className="font-medium mb-3">Card Display Options</h3>
+            <div className="grid grid-cols-2 gap-3">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -350,10 +350,10 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       ) : (
         <div className={`
           ${viewMode === "grid" 
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" 
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 lg:gap-4" 
             : viewMode === "tiles"
-            ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3"
-            : "space-y-3"
+            ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 lg:gap-3"
+            : "space-y-2 lg:space-y-3"
           }
         `}>
           {filteredItems.map((item) => (

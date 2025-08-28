@@ -245,12 +245,14 @@ export const useContent = () => {
     fetchCollections();
   }, [user]);
 
-  // Set up real-time subscriptions
+  // Set up real-time subscriptions with better error handling
   useEffect(() => {
     if (!user) return;
 
+    console.log('Setting up realtime subscriptions for user:', user.id);
+    
     const contentChannel = supabase
-      .channel('content-changes')
+      .channel(`content-changes-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -259,14 +261,18 @@ export const useContent = () => {
           table: 'content',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
-          fetchContent();
+        (payload) => {
+          console.log('Content change detected:', payload);
+          // Refetch content on any change
+          setTimeout(() => fetchContent(), 500);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Content subscription status:', status);
+      });
 
     const collectionsChannel = supabase
-      .channel('collections-changes')
+      .channel(`collections-changes-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -275,31 +281,19 @@ export const useContent = () => {
           table: 'collections',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
-          fetchCollections();
+        (payload) => {
+          console.log('Collections change detected:', payload);
+          setTimeout(() => fetchCollections(), 500);
         }
       )
-      .subscribe();
-
-    const collectionItemsChannel = supabase
-      .channel('collection-items-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'collection_items'
-        },
-        () => {
-          fetchCollections();
-        }
-      )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Collections subscription status:', status);
+      });
 
     return () => {
+      console.log('Cleaning up subscriptions');
       supabase.removeChannel(contentChannel);
       supabase.removeChannel(collectionsChannel);
-      supabase.removeChannel(collectionItemsChannel);
     };
   }, [user]);
 

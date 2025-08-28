@@ -17,40 +17,40 @@ const Header = () => {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center justify-between px-4 md:px-6">
+        <div className="flex h-12 md:h-14 items-center justify-between px-3 md:px-4 lg:px-6">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <div className="h-4 w-4 rounded bg-white" />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="h-6 md:h-8 w-6 md:w-8 rounded-lg bg-primary flex items-center justify-center">
+              <div className="h-3 md:h-4 w-3 md:w-4 rounded bg-white" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">
+              <h1 className="text-sm md:text-lg font-semibold text-foreground">
                 Curator AI
               </h1>
-              <p className="text-xs text-muted-foreground -mt-1">Knowledge Hub</p>
+              <p className="text-xs text-muted-foreground -mt-1 hidden sm:block">Knowledge Hub</p>
             </div>
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-6">
+          <div className="flex-1 max-w-sm md:max-w-md mx-3 md:mx-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-2 md:left-3 top-1/2 h-3 md:h-4 w-3 md:w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search your knowledge base..."
-                className="pl-10"
+                placeholder="Search..."
+                className="pl-8 md:pl-10 text-sm"
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 md:space-x-3">
             <Button 
               size="sm" 
-              className="hidden sm:flex"
+              className="text-xs md:text-sm"
               onClick={() => setIsAddModalOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Content
+              <Plus className="h-3 md:h-4 w-3 md:w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Add Content</span>
             </Button>
             
             <Button 
@@ -59,7 +59,7 @@ const Header = () => {
               className="relative"
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
             >
-              <Bell className="h-4 w-4" />
+              <Bell className="h-3 md:h-4 w-3 md:w-4" />
               <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-primary" />
             </Button>
 

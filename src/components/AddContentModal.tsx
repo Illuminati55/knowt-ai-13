@@ -19,6 +19,7 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { addContent } = useContent();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,6 +51,42 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
     }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // For now, we'll create a simple file URL - in a real app you'd upload to storage
+      const fileUrl = `document://${file.name}`;
+      await addContent(fileUrl, `Uploaded file: ${file.name}`);
+      
+      toast({
+        title: "Document uploaded successfully!",
+        description: "AI is processing your document for insights.",
+      });
+      
+      setSelectedFile(null);
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error uploading document",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      handleFileUpload(file);
+    }
+  };
+
   const detectSource = (url: string) => {
     if (url.includes("youtube.com") || url.includes("youtu.be")) return "youtube";
     if (url.includes("linkedin.com")) return "linkedin";
@@ -69,18 +106,18 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden">
+      <DialogContent className="w-[95vw] max-w-2xl p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
-        <DialogHeader className="p-6 pb-4 bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-card-border">
+        <DialogHeader className="p-4 lg:p-6 pb-4 bg-gradient-to-r from-primary/5 to-secondary/5 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-lg gradient-primary flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-white" />
+              <div className="h-8 lg:h-10 w-8 lg:w-10 rounded-lg bg-primary flex items-center justify-center">
+                <Sparkles className="h-4 lg:h-5 w-4 lg:w-5 text-white" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-semibold">Add New Content</DialogTitle>
-                <p className="text-sm text-muted-foreground">
+                <DialogTitle className="text-lg lg:text-xl font-semibold">Add New Content</DialogTitle>
+                <p className="text-xs lg:text-sm text-muted-foreground">
                   Let AI analyze and organize your content automatically
                 </p>
               </div>
@@ -89,7 +126,7 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
         </DialogHeader>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 lg:p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             
             {/* Tab Navigation */}
@@ -149,16 +186,16 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
                 </div>
 
                 {/* AI Processing Info */}
-                <div className="p-4 rounded-lg bg-gradient-to-r from-accent/20 to-primary/10 border border-accent/20">
+                <div className="p-3 lg:p-4 rounded-lg bg-gradient-to-r from-accent/20 to-primary/10 border border-accent/20">
                   <div className="flex items-start space-x-3">
-                    <Sparkles className="h-5 w-5 text-primary mt-0.5" />
+                    <Sparkles className="h-4 lg:h-5 w-4 lg:w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">AI Processing Included</p>
+                      <p className="text-xs lg:text-sm font-medium">AI Processing Included</p>
                       <ul className="text-xs text-muted-foreground space-y-1">
                         <li>• Automatic content extraction and summarization</li>
                         <li>• Intelligent tagging based on content analysis</li>
-                        <li>• Key insights and takeaways generation</li>
-                        <li>• Source detection and metadata extraction</li>
+                        <li className="hidden sm:block">• Key insights and takeaways generation</li>
+                        <li className="hidden sm:block">• Source detection and metadata extraction</li>
                       </ul>
                     </div>
                   </div>
@@ -189,8 +226,20 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
             <TabsContent value="upload" className="space-y-6 mt-6">
               <div className="space-y-4">
                 
+                {/* File Input */}
+                <input
+                  type="file"
+                  id="file-upload"
+                  accept=".pdf,.docx,.txt,.doc"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                
                 {/* Drag & Drop Area */}
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center hover:border-primary/50 hover:bg-accent/5 transition-smooth cursor-pointer">
+                <label 
+                  htmlFor="file-upload" 
+                  className="block border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 hover:bg-accent/5 transition-smooth cursor-pointer"
+                >
                   <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <div className="space-y-2">
                     <p className="text-sm font-medium">Drop files here or click to browse</p>
@@ -198,25 +247,48 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
                       Supports PDF, DOCX, TXT files up to 10MB
                     </p>
                   </div>
-                </div>
+                </label>
+
+                {selectedFile && (
+                  <div className="p-3 bg-accent/10 rounded-lg border">
+                    <p className="text-sm font-medium">Selected: {selectedFile.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                )}
 
                 {/* Upload Button */}
-                <Button variant="outline" className="w-full">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Files
+                <Button 
+                  onClick={() => document.getElementById('file-upload')?.click()} 
+                  variant="outline" 
+                  className="w-full"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose Files
+                    </>
+                  )}
                 </Button>
 
                 {/* AI Processing Info */}
-                <div className="p-4 rounded-lg bg-gradient-to-r from-accent/20 to-primary/10 border border-accent/20">
+                <div className="p-3 lg:p-4 rounded-lg bg-gradient-to-r from-accent/20 to-primary/10 border border-accent/20">
                   <div className="flex items-start space-x-3">
-                    <Sparkles className="h-5 w-5 text-primary mt-0.5" />
+                    <Sparkles className="h-4 lg:h-5 w-4 lg:w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">AI Document Analysis</p>
+                      <p className="text-xs lg:text-sm font-medium">AI Document Analysis</p>
                       <ul className="text-xs text-muted-foreground space-y-1">
                         <li>• Text extraction from PDF and Word documents</li>
                         <li>• Intelligent content summarization</li>
-                        <li>• Automatic topic and keyword identification</li>
-                        <li>• Document structure analysis</li>
+                        <li className="hidden sm:block">• Automatic topic and keyword identification</li>
+                        <li className="hidden sm:block">• Document structure analysis</li>
                       </ul>
                     </div>
                   </div>

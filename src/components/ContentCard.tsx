@@ -388,7 +388,7 @@ const ContentCard = ({
                 size="sm"
                 onClick={handleAIInsights}
                 className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                title="Key Insights"
+                title="AI Insights"
               >
                 <Edit3 className="h-4 w-4" />
               </Button>
