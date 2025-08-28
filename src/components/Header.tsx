@@ -16,21 +16,18 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-card-border bg-card/80 backdrop-blur-lg">
-        <div className="flex h-16 items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-14 items-center justify-between px-4 md:px-6">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center">
-                <div className="h-4 w-4 rounded bg-white/20 backdrop-blur-sm" />
-              </div>
-              <div className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary-glow animate-pulse" />
+            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+              <div className="h-4 w-4 rounded bg-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Curator
+              <h1 className="text-lg font-semibold text-foreground">
+                Curator AI
               </h1>
-              <p className="text-xs text-muted-foreground -mt-1">AI Knowledge Hub</p>
+              <p className="text-xs text-muted-foreground -mt-1">Knowledge Hub</p>
             </div>
           </div>
 
@@ -40,15 +37,14 @@ const Header = () => {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search your knowledge base..."
-                className="pl-10 bg-muted/50 border-muted-foreground/20 focus:bg-card transition-smooth"
+                className="pl-10"
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <Button 
-              variant="gradient" 
               size="sm" 
               className="hidden sm:flex"
               onClick={() => setIsAddModalOpen(true)}
@@ -71,9 +67,9 @@ const Header = () => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center cursor-pointer hover:shadow-glow transition-smooth">
-                  <User className="h-4 w-4 text-white" />
-                </div>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <User className="h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="p-2 border-b">

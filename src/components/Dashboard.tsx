@@ -146,10 +146,10 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
     <main className="flex-1 p-3 md:p-6 space-y-4 md:space-y-6 max-h-screen overflow-y-auto">
       
       {/* Header Section */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-3xl font-semibold text-foreground">
               Curator AI
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -157,7 +157,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             </p>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -240,33 +240,33 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
               </Button>
             )}
             
-            <div className="flex items-center border border-border rounded-lg p-1">
+            <div className="flex items-center border rounded-lg p-1">
               <Button
                 variant={viewMode === "grid" ? "secondary" : "ghost"}
                 size="sm"
-                className="h-7 w-7 p-0"
+                className="h-8 w-8 p-0"
                 onClick={() => setViewMode("grid")}
                 title="Grid View"
               >
-                <LayoutGrid className="h-3 w-3" />
+                <LayoutGrid className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === "tiles" ? "secondary" : "ghost"}
                 size="sm"
-                className="h-7 w-7 p-0"
+                className="h-8 w-8 p-0"
                 onClick={() => setViewMode("tiles")}
                 title="Tile View"
               >
-                <Grid3X3 className="h-3 w-3" />
+                <Grid3X3 className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === "list" ? "secondary" : "ghost"}
                 size="sm"
-                className="h-7 w-7 p-0"
+                className="h-8 w-8 p-0"
                 onClick={() => setViewMode("list")}
                 title="List View"
               >
-                <List className="h-3 w-3" />
+                <List className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -277,14 +277,14 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
           {filters.map((filter) => (
             <Button
               key={filter.id}
-              variant={selectedFilter === filter.id ? "secondary" : "outline"}
+              variant={selectedFilter === filter.id ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedFilter(filter.id)}
               className="transition-smooth"
             >
               {filter.label}
               <Badge 
-                variant={selectedFilter === filter.id ? "default" : "secondary"}
+                variant={selectedFilter === filter.id ? "secondary" : "outline"}
                 className="ml-2 text-xs"
               >
                 {filter.count}

@@ -1,53 +1,101 @@
-/* Import Google Fonts - Modern & Clean */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+/* Import Google Fonts - Clean & Professional */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Curator AI Design System - Modern Knowledge Management */
+/* Clean Professional Design System */
 
 @layer base {
   :root {
-    /* Modern Task Management UI - Clean & Professional */
-    --background: 248 250 252;  /* Clean slate-50 background */
-    --foreground: 51 65 85;     /* Slate-600 text */
+    /* Light Mode - Clean & Professional */
+    --background: 0 0% 100%;           /* Pure white background */
+    --foreground: 0 0% 9%;             /* Almost black text */
     
     /* Cards & Surfaces */
-    --card: 255 255 255;        /* Pure white cards */
-    --card-foreground: 51 65 85;
-    --card-border: 226 232 240; /* Light border */
+    --card: 0 0% 100%;                 /* White cards */
+    --card-foreground: 0 0% 9%;        /* Dark text on cards */
+    --card-border: 0 0% 90%;           /* Light gray borders */
     
-    /* Professional Color Palette - Inspired by modern task management */
-    --primary: 59 130 246;      /* Clean blue-500 */
-    --primary-foreground: 255 255 255;
-    --primary-glow: 147 197 253; /* Blue-300 */
+    /* Primary Colors - Professional Blue */
+    --primary: 221 83% 53%;            /* Clean blue */
+    --primary-foreground: 0 0% 100%;   /* White text on primary */
     
-    --secondary: 16 185 129;    /* Clean emerald-500 */
-    --secondary-foreground: 255 255 255;
+    /* Secondary Colors - Subtle Gray */
+    --secondary: 0 0% 96%;             /* Light gray */
+    --secondary-foreground: 0 0% 9%;   /* Dark text on secondary */
     
-    --accent: 245 158 11;       /* Warm amber-500 */
-    --accent-foreground: 255 255 255;
-
-    /* Surface Colors */
-    --card: 0 0% 100%;
-    --card-foreground: 222 34% 12%;
-    --card-border: 220 13% 91%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 34% 12%;
+    /* Accent Colors */
+    --accent: 0 0% 96%;                /* Light gray accent */
+    --accent-foreground: 0 0% 9%;      /* Dark text on accent */
 
     /* Neutral Tones */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 0% 96%;                 /* Light gray muted */
+    --muted-foreground: 0 0% 45%;      /* Medium gray text */
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
+    /* Borders & Inputs */
+    --border: 0 0% 90%;                /* Light border */
+    --input: 0 0% 96%;                 /* Light input background */
+    --ring: 221 83% 53%;               /* Focus ring color */
 
     /* Semantic Colors */
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 60%;          /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;            /* Green for success */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;             /* Orange for warnings */
+    --warning-foreground: 0 0% 100%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark Mode - Professional */
+    --background: 0 0% 3.9%;           /* Very dark background */
+    --foreground: 0 0% 98%;            /* Light text */
+    
+    /* Cards & Surfaces */
+    --card: 0 0% 3.9%;                 /* Dark cards */
+    --card-foreground: 0 0% 98%;       /* Light text on cards */
+    --card-border: 0 0% 14.9%;         /* Dark borders */
+    
+    /* Primary Colors */
+    --primary: 221 83% 53%;            /* Same blue */
+    --primary-foreground: 0 0% 100%;   /* White text */
+    
+    /* Secondary Colors */
+    --secondary: 0 0% 14.9%;           /* Dark gray */
+    --secondary-foreground: 0 0% 98%;  /* Light text */
+    
+    /* Accent Colors */
+    --accent: 0 0% 14.9%;              /* Dark accent */
+    --accent-foreground: 0 0% 98%;     /* Light text */
+
+    /* Neutral Tones */
+    --muted: 0 0% 14.9%;               /* Dark muted */
+    --muted-foreground: 0 0% 63.9%;    /* Medium light text */
+
+    /* Borders & Inputs */
+    --border: 0 0% 14.9%;              /* Dark border */
+    --input: 0 0% 14.9%;               /* Dark input */
+    --ring: 221 83% 53%;               /* Same focus ring */
+
+    /* Semantic Colors */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
@@ -55,109 +103,15 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    /* AI Processing States */
-    --processing: 262 83% 58%;
-    --pending: 38 92% 50%;
-    --completed: 142 71% 45%;
-    --failed: 0 84% 60%;
-
-    /* Vibrant Beautiful Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(280 100% 65%) 0%, hsl(200 95% 58%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(320 85% 75%) 0%, hsl(280 100% 80%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(280 100% 65%) 0%, hsl(200 95% 58%) 50%, hsl(320 85% 75%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(280 100% 98%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(280 100% 98%) 0%, hsl(0 0% 100%) 100%);
-
-    /* Enhanced Shadows & Effects */
-    --shadow-soft: 0 1px 3px 0 hsl(280 100% 65% / 0.1), 0 1px 2px 0 hsl(280 100% 65% / 0.06);
-    --shadow-medium: 0 4px 6px -1px hsl(280 100% 65% / 0.1), 0 2px 4px -1px hsl(280 100% 65% / 0.06);
-    --shadow-large: 0 10px 15px -3px hsl(280 100% 65% / 0.1), 0 4px 6px -2px hsl(280 100% 65% / 0.05);
-    --shadow-glow: 0 0 30px hsl(280 100% 65% / 0.4);
-    --shadow-ai: 0 0 40px hsl(280 100% 65% / 0.3);
-    --shadow-card: 0 4px 20px hsl(280 100% 65% / 0.1);
-    --shadow-hover: 0 8px 30px hsl(280 100% 65% / 0.2);
-
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    /* Dark theme - Professional & Modern */
-    --background: 15 23 42;        /* slate-800 - Rich dark background */
-    --foreground: 248 250 252;     /* slate-50 - Clean light text */
-    
-    /* Cards & Surfaces */
-    --card: 30 41 59;              /* slate-700 - Elevated cards */
-    --card-foreground: 248 250 252;
-    --card-border: 51 65 85;       /* slate-600 - Subtle borders */
-    
-    /* Primary Colors */
-    --primary: 147 197 253;        /* blue-300 - Bright but soft */
-    --primary-foreground: 15 23 42;
-    --primary-glow: 59 130 246;    /* blue-500 */
-    
-    --secondary: 52 211 153;       /* emerald-400 */
-    --secondary-foreground: 15 23 42;
-    
-    --accent: 251 191 36;          /* amber-400 */
-    --accent-foreground: 15 23 42;
-
-    /* Surface Colors */
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
-
-    /* Neutral Tones */
-    --muted: 51 65 85;             /* slate-600 */
-    --muted-foreground: 148 163 184; /* slate-400 */
-
-    --border: 51 65 85;
-    --input: 51 65 85;
-    --ring: 147 197 253;
-
-    /* Semantic Colors */
-    --destructive: 248 113 113;    /* red-400 */
-    --destructive-foreground: 15 23 42;
-
-    --success: 52 211 153;         /* emerald-400 */
-    --success-foreground: 15 23 42;
-
-    --warning: 251 191 36;         /* amber-400 */
-    --warning-foreground: 15 23 42;
-
-    /* AI Processing States */
-    --processing: 196 181 253;     /* violet-300 */
-    --pending: 251 191 36;         /* amber-400 */
-    --completed: 52 211 153;       /* emerald-400 */
-    --failed: 248 113 113;         /* red-400 */
-
     /* Sidebar */
-    --sidebar-background: 15 23 42;
-    --sidebar-foreground: 248 250 252;
-    --sidebar-primary: 147 197 253;
-    --sidebar-primary-foreground: 15 23 42;
-    --sidebar-accent: 30 41 59;
-    --sidebar-accent-foreground: 248 250 252;
-    --sidebar-border: 51 65 85;
-    --sidebar-ring: 147 197 253;
+    --sidebar-background: 0 0% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 14.9%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
@@ -167,9 +121,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-manrope antialiased;
+    @apply bg-background text-foreground font-inter antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    overflow-x: hidden;
   }
 
   /* Custom scrollbar */
@@ -192,71 +145,17 @@
 }
 
 @layer components {
-  /* Custom component classes for consistent styling */
-  .gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .gradient-hero {
-    background: var(--gradient-hero);
-  }
-
-  .gradient-card {
-    background: var(--gradient-card);
-  }
-
-  .shadow-ai {
-    box-shadow: var(--shadow-ai);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
-  }
-
+  /* Smooth transitions */
   .transition-smooth {
-    transition: var(--transition-smooth);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .transition-bounce {
-    transition: var(--transition-bounce);
+  /* Clean shadows */
+  .shadow-clean {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
 
-  /* AI Processing Animation */
-  .processing-pulse {
-    animation: processingPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes processingPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  /* Floating animation for cards */
-  .float-card {
-    animation: floatCard 6s ease-in-out infinite;
-  }
-
-  @keyframes floatCard {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-  }
-
-  /* Shimmer loading effect */
-  .shimmer {
-    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--accent)) 50%, hsl(var(--muted)) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  /* Glassmorphism effect */
-  .glass {
-    backdrop-filter: blur(16px) saturate(180%);
-    background-color: hsl(var(--card) / 0.75);
-    border: 1px solid hsl(var(--border) / 0.18);
+  .shadow-clean-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
 }

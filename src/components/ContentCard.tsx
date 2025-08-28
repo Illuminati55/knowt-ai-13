@@ -181,7 +181,7 @@ const ContentCard = ({
   if (viewMode === "list") {
     return (
       <div 
-        className="group flex items-center space-x-4 p-4 bg-card border border-card-border rounded-lg hover:shadow-md transition-smooth"
+        className="group flex items-center space-x-4 p-4 bg-card border rounded-lg hover:shadow-clean transition-smooth"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -280,7 +280,7 @@ const ContentCard = ({
   // Grid view
   return (
     <div 
-      className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-smooth cursor-pointer relative flex flex-col h-full"
+      className="group bg-card border rounded-lg overflow-hidden hover:shadow-clean transition-smooth cursor-pointer relative flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

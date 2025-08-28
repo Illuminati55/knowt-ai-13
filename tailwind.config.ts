@@ -20,8 +20,7 @@ export default {
 		extend: {
 			fontFamily: {
 				inter: ['Inter', 'sans-serif'],
-				manrope: ['Manrope', 'sans-serif'],
-				sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
+				sans: ['Inter', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -31,8 +30,7 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))',
-					glow: 'hsl(var(--primary-glow))'
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -59,10 +57,6 @@ export default {
 					foreground: 'hsl(var(--card-foreground))',
 					border: 'hsl(var(--card-border))'
 				},
-				processing: 'hsl(var(--processing))',
-				pending: 'hsl(var(--pending))',
-				completed: 'hsl(var(--completed))',
-				failed: 'hsl(var(--failed))',
 				success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))'
@@ -83,11 +77,8 @@ export default {
 				}
 			},
 			boxShadow: {
-				soft: 'var(--shadow-soft)',
-				medium: 'var(--shadow-medium)',
-				large: 'var(--shadow-large)',
-				glow: 'var(--shadow-glow)',
-				ai: 'var(--shadow-ai)'
+				clean: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+				'clean-lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
