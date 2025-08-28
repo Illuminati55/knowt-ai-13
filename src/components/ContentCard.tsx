@@ -1,4 +1,4 @@
-import { Clock, ExternalLink, FileText, Globe, Youtube, Linkedin, Zap, Tag, Star, Trash2 } from "lucide-react";
+import { Clock, ExternalLink, FileText, Globe, Youtube, Linkedin, Zap, Tag, Star, Trash2, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ interface ContentCardProps {
   thumbnail?: string;
   keyTakeaways?: string[];
   is_favorite: boolean;
+  viewMode?: "grid" | "list";
+  onAddToCollection?: () => void;
 }
 
 const ContentCard = ({
@@ -29,7 +31,9 @@ const ContentCard = ({
   processingStatus,
   thumbnail,
   keyTakeaways,
-  is_favorite
+  is_favorite,
+  viewMode = "grid",
+  onAddToCollection
 }: ContentCardProps) => {
   const { toggleFavorite, deleteContent } = useContent();
   const getSourceIcon = (source: string) => {
@@ -53,6 +57,92 @@ const ContentCard = ({
   };
 
   const SourceIcon = getSourceIcon(source);
+
+  if (viewMode === "list") {
+    return (
+      <Card className="group relative p-4 border-card-border bg-gradient-card hover:shadow-medium transition-smooth cursor-pointer">
+        <div className="flex items-center space-x-4">
+          {/* Thumbnail */}
+          <div className="w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-accent/20 flex items-center justify-center flex-shrink-0">
+            {thumbnail ? (
+              <img 
+                src={thumbnail} 
+                alt={title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <SourceIcon className="h-6 w-6 text-muted-foreground" />
+            )}
+          </div>
+          
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm leading-tight truncate group-hover:text-primary transition-smooth">
+                  {title}
+                </h3>
+                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                  {summary}
+                </p>
+                <div className="flex items-center space-x-4 mt-2">
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">{createdAt}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    <SourceIcon className="h-3 w-3 mr-1" />
+                    {source}
+                  </Badge>
+                  <div className={`h-2 w-2 rounded-full ${getStatusColor(processingStatus)}`} />
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="flex items-center space-x-1 ml-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth ${is_favorite ? 'text-yellow-500 opacity-100' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }}
+                >
+                  <Star className={`h-3 w-3 ${is_favorite ? 'fill-current' : ''}`} />
+                </Button>
+                {onAddToCollection && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
+                    onClick={(e) => { e.stopPropagation(); onAddToCollection(); }}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth text-red-500"
+                  onClick={(e) => { e.stopPropagation(); deleteContent(id); }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+                {url && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
+                    onClick={(e) => { e.stopPropagation(); window.open(url, '_blank'); }}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="group relative p-0 border-card-border bg-gradient-card hover:shadow-medium hover:-translate-y-1 transition-smooth cursor-pointer overflow-hidden">
@@ -144,20 +234,35 @@ const ContentCard = ({
               variant="ghost" 
               size="sm" 
               className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth ${is_favorite ? 'text-yellow-500 opacity-100' : ''}`}
-              onClick={() => toggleFavorite(id)}
+              onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }}
             >
               <Star className={`h-3 w-3 ${is_favorite ? 'fill-current' : ''}`} />
             </Button>
+            {onAddToCollection && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
+                onClick={(e) => { e.stopPropagation(); onAddToCollection(); }}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            )}
             <Button 
               variant="ghost" 
               size="sm" 
               className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth text-red-500"
-              onClick={() => deleteContent(id)}
+              onClick={(e) => { e.stopPropagation(); deleteContent(id); }}
             >
               <Trash2 className="h-3 w-3" />
             </Button>
             {url && (
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
+                onClick={(e) => { e.stopPropagation(); window.open(url, '_blank'); }}
+              >
                 <ExternalLink className="h-3 w-3" />
               </Button>
             )}

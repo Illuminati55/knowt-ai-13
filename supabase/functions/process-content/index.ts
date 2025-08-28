@@ -35,6 +35,9 @@ serve(async (req) => {
 
     console.log('Updated status to processing');
 
+    // Extract thumbnail in parallel
+    const thumbnailPromise = extractThumbnail(url);
+
     // Fetch and analyze content with Gemini
     const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
     
@@ -135,6 +138,10 @@ serve(async (req) => {
 
     console.log('Analysis result:', analysisResult);
 
+    // Wait for thumbnail extraction to complete
+    const thumbnailUrl = await thumbnailPromise;
+    console.log('Thumbnail extracted:', thumbnailUrl);
+
     // Update content in database
     const { error: updateError } = await supabase
       .from('content')
@@ -145,6 +152,7 @@ serve(async (req) => {
         tags: analysisResult.tags || [],
         key_takeaways: analysisResult.key_takeaways || [],
         source: analysisResult.source_type || 'web',
+        thumbnail_url: thumbnailUrl,
         processing_status: 'completed'
       })
       .eq('id', contentId);
@@ -200,3 +208,29 @@ serve(async (req) => {
     );
   }
 });
+
+async function extractThumbnail(url: string): Promise<string | null> {
+  try {
+    console.log('Extracting thumbnail for:', url);
+    
+    const response = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/extract-thumbnail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`
+      },
+      body: JSON.stringify({ url })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result.success ? result.thumbnailUrl : null;
+    }
+    
+    console.log('Thumbnail extraction failed:', response.status);
+    return null;
+  } catch (error) {
+    console.error('Error extracting thumbnail:', error);
+    return null;
+  }
+}

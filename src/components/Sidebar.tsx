@@ -20,8 +20,13 @@ import { useContent } from "@/hooks/useContent";
 import AddContentModal from "./AddContentModal";
 import AIInsightsModal from "./AIInsightsModal";
 
-const Sidebar = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+interface SidebarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  onCreateCollection: () => void;
+}
+
+const Sidebar = ({ activeTab, onTabChange, onCreateCollection }: SidebarProps) => {
   const [expandedSections, setExpandedSections] = useState(["collections"]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isInsightsModalOpen, setIsInsightsModalOpen] = useState(false);
@@ -80,7 +85,7 @@ const Sidebar = () => {
                 key={item.id}
                 variant={activeTab === item.id ? "secondary" : "ghost"}
                 className="w-full justify-start"
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => onTabChange(item.id)}
               >
                 <item.icon className="h-4 w-4 mr-3" />
                 <span className="flex-1 text-left">{item.label}</span>
@@ -119,7 +124,7 @@ const Sidebar = () => {
                     </Badge>
                   </div>
                 ))}
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-muted-foreground mt-2">
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs text-muted-foreground mt-2" onClick={onCreateCollection}>
                   <Plus className="h-3 w-3 mr-2" />
                   New Collection
                 </Button>
@@ -145,7 +150,13 @@ const Sidebar = () => {
             {expandedSections.includes("sources") && (
               <div className="space-y-1 pl-6">
                 {sources.map((source) => (
-                  <div key={source.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-smooth">
+                  <div 
+                    key={source.id} 
+                    className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition-smooth ${
+                      activeTab === source.id ? 'bg-secondary' : 'hover:bg-muted/50'
+                    }`}
+                    onClick={() => onTabChange(source.id)}
+                  >
                     <source.icon className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm flex-1">{source.name}</span>
                     <Badge variant="outline" className="text-xs">
