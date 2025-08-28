@@ -280,7 +280,7 @@ serve(async (req) => {
         content_text: pageContent.slice(0, 2000), // Store first 2000 chars
         tags: analysisResult.tags || [],
         key_takeaways: analysisResult.key_takeaways || [],
-        source: analysisResult.source_type || 'web',
+        source: mapSourceType(analysisResult.source_type || 'web'),
         thumbnail_url: thumbnailUrl,
         processing_status: 'completed'
       })
@@ -380,4 +380,18 @@ async function extractThumbnail(url: string): Promise<string | null> {
     console.error('💥 Error extracting thumbnail:', error);
     return null;
   }
+}
+
+function mapSourceType(sourceType: string): string {
+  const sourceMap: { [key: string]: string } = {
+    'web': 'web',
+    'youtube': 'youtube', 
+    'linkedin': 'linkedin',
+    'medium': 'medium',
+    'substack': 'substack',
+    'document': 'document'
+  };
+  
+  const normalized = sourceType.toLowerCase();
+  return sourceMap[normalized] || 'web';
 }

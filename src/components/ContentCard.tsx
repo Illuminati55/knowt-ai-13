@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, ExternalLink, Edit3, Trash2, Plus, Youtube, Linkedin, Globe, FileText, BookOpen, Rss } from "lucide-react";
+import { Heart, ExternalLink, Edit3, Trash2, Plus, Youtube, Linkedin, Globe, FileText, BookOpen, Rss, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useContent } from "@/hooks/useContent";
@@ -417,7 +417,7 @@ const ContentCard = ({
                 className="h-6 lg:h-8 w-6 lg:w-8 p-0 text-muted-foreground hover:text-primary"
                 title="AI Insights"
               >
-                <Edit3 className="h-3 lg:h-4 w-3 lg:w-4" />
+                <Sparkles className="h-3 lg:h-4 w-3 lg:w-4" />
               </Button>
             )}
             <Button
