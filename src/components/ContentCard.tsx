@@ -15,6 +15,7 @@ interface ContentCardProps {
   processingStatus: "pending" | "processing" | "completed" | "failed";
   thumbnail?: string;
   keyTakeaways?: string[];
+  is_favorite: boolean;
 }
 
 const ContentCard = ({
