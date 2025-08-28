@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "./AuthProvider";
 import AddContentModal from "./AddContentModal";
+import NotificationPanel from "./NotificationPanel";
 
 const Header = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { user, signOut } = useAuth();
 
   return (
@@ -54,7 +56,12 @@ const Header = () => {
               Add Content
             </Button>
             
-            <Button variant="ghost" size="sm" className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative"
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+            >
               <Bell className="h-4 w-4" />
               <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-primary" />
             </Button>
@@ -83,6 +90,11 @@ const Header = () => {
       <AddContentModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+      />
+      
+      <NotificationPanel 
+        isOpen={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
       />
     </>
   );

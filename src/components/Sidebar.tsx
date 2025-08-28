@@ -12,7 +12,8 @@ import {
   Globe,
   FileText,
   Youtube,
-  Linkedin
+  Linkedin,
+  Rss
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +53,8 @@ const Sidebar = ({ activeTab, onTabChange, onCreateCollection }: SidebarProps) =
     { id: "documents", name: "Documents", icon: FileText, count: content.filter(item => item.source === 'document').length },
     { id: "youtube", name: "YouTube", icon: Youtube, count: content.filter(item => item.source === 'youtube').length },
     { id: "linkedin", name: "LinkedIn", icon: Linkedin, count: content.filter(item => item.source === 'linkedin').length },
+    { id: "medium", name: "Medium", icon: BookOpen, count: content.filter(item => item.source === 'medium').length },
+    { id: "substack", name: "Substack", icon: Rss, count: content.filter(item => item.source === 'substack').length },
   ];
 
   const processingCount = content.filter(item => 
@@ -169,18 +172,17 @@ const Sidebar = ({ activeTab, onTabChange, onCreateCollection }: SidebarProps) =
           </div>
 
           {/* AI Processing Status */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-accent/20 to-primary/10 border border-accent/20">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="h-2 w-2 rounded-full bg-processing animate-pulse" />
-              <span className="text-sm font-medium">AI Processing</span>
+          {processingCount > 0 && (
+            <div className="p-4 rounded-xl bg-gradient-to-br from-accent/20 to-primary/10 border border-accent/20">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-processing animate-pulse" />
+                <span className="text-sm font-medium">AI Processing</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {processingCount} items being analyzed for insights and tags
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {processingCount > 0 
-                ? `${processingCount} items being analyzed for insights and tags`
-                : 'All content processed and ready'
-              }
-            </p>
-          </div>
+          )}
 
         </div>
       </aside>

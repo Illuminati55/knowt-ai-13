@@ -40,6 +40,8 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
     { id: "web", label: "Web Articles" },
     { id: "youtube", label: "YouTube" },
     { id: "linkedin", label: "LinkedIn" },
+    { id: "medium", label: "Medium" },
+    { id: "substack", label: "Substack" },
     { id: "document", label: "Documents" },
   ];
 
@@ -68,8 +70,11 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       case "youtube":
         items = items.filter(item => item.source === "youtube");
         break;
-      case "linkedin":
-        items = items.filter(item => item.source === "linkedin");
+      case "medium":
+        items = items.filter(item => item.source === "medium");
+        break;
+      case "substack":
+        items = items.filter(item => item.source === "substack");
         break;
     }
 
@@ -276,13 +281,17 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             <ContentCard 
               key={item.id} 
               {...item}
-              source={item.source as "web" | "youtube" | "linkedin" | "document"}
+              source={item.source as "web" | "youtube" | "linkedin" | "document" | "medium" | "substack"}
               createdAt={new Date(item.created_at).toLocaleDateString()}
               processingStatus={item.processing_status}
               keyTakeaways={item.key_takeaways}
               thumbnail={item.thumbnail_url}
               viewMode={viewMode}
               onAddToCollection={() => setAddToCollectionContent(item.id)}
+              onAIInsights={() => {
+                // You can add AI Insights modal logic here
+                console.log('AI Insights for:', item.id);
+              }}
             />
           ))}
         </div>

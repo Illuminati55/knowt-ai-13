@@ -1,23 +1,25 @@
-import { Clock, ExternalLink, FileText, Globe, Youtube, Linkedin, Zap, Tag, Star, Trash2, Plus } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { Heart, ExternalLink, Edit3, Trash2, Plus, Youtube, Linkedin, Globe, FileText, BookOpen, Rss } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useContent } from "@/hooks/useContent";
+import { toast } from "@/hooks/use-toast";
 
-interface ContentCardProps {
+export interface ContentCardProps {
   id: string;
   title: string;
-  summary: string;
-  url?: string;
-  source: "web" | "document" | "youtube" | "linkedin";
-  tags: string[];
+  summary?: string;
+  url: string;
+  source: "web" | "youtube" | "linkedin" | "document" | "medium" | "substack";
+  tags?: string[];
   createdAt: string;
   processingStatus: "pending" | "processing" | "completed" | "failed";
   thumbnail?: string;
   keyTakeaways?: string[];
   is_favorite: boolean;
-  viewMode?: "grid" | "list";
-  onAddToCollection?: () => void;
+  viewMode: "grid" | "list";
+  onAddToCollection: () => void;
+  onAIInsights?: () => void;
 }
 
 const ContentCard = ({
@@ -32,244 +34,313 @@ const ContentCard = ({
   thumbnail,
   keyTakeaways,
   is_favorite,
-  viewMode = "grid",
-  onAddToCollection
+  viewMode,
+  onAddToCollection,
+  onAIInsights,
 }: ContentCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
   const { toggleFavorite, deleteContent } = useContent();
-  const getSourceIcon = (source: string) => {
+
+  const getSourceIcon = () => {
     switch (source) {
-      case "web": return Globe;
-      case "document": return FileText;
       case "youtube": return Youtube;
       case "linkedin": return Linkedin;
+      case "document": return FileText;
+      case "medium": return BookOpen;
+      case "substack": return Rss;
       default: return Globe;
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed": return "bg-completed";
-      case "processing": return "bg-processing";
-      case "pending": return "bg-pending";
-      case "failed": return "bg-failed";
-      default: return "bg-muted";
+  const getSourceColor = () => {
+    switch (source) {
+      case "youtube": return "text-red-500";
+      case "linkedin": return "text-blue-600";
+      case "document": return "text-gray-600";
+      case "medium": return "text-green-600";
+      case "substack": return "text-orange-500";
+      default: return "text-blue-500";
     }
   };
 
-  const SourceIcon = getSourceIcon(source);
+  const getActionText = () => {
+    switch (source) {
+      case "youtube": return "Watch Now";
+      case "document": return "Read Document";
+      default: return "Read More";
+    }
+  };
+
+  const handleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await toggleFavorite(id);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteContent(id);
+      toast({
+        title: "Content deleted",
+        description: "The content has been removed from your collection.",
+      });
+    } catch (error) {
+      console.error('Error deleting content:', error);
+    }
+  };
+
+  const handleAddToCollection = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAddToCollection();
+  };
+
+  const handleTitleClick = () => {
+    window.open(url, '_blank');
+  };
+
+  const handleAIInsights = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onAIInsights) {
+      onAIInsights();
+    }
+  };
+
+  const SourceIcon = getSourceIcon();
 
   if (viewMode === "list") {
     return (
-      <Card className="group relative p-4 border-card-border bg-gradient-card hover:shadow-medium transition-smooth cursor-pointer">
-        <div className="flex items-center space-x-4">
-          {/* Thumbnail */}
-          <div className="w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-accent/20 flex items-center justify-center flex-shrink-0">
-            {thumbnail ? (
-              <img 
-                src={thumbnail} 
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <SourceIcon className="h-6 w-6 text-muted-foreground" />
-            )}
+      <div 
+        className="group flex items-center space-x-4 p-4 bg-card border border-card-border rounded-lg hover:shadow-md transition-smooth"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Thumbnail */}
+        <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-muted overflow-hidden">
+          {thumbnail ? (
+            <img 
+              src={thumbnail} 
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <div className={`w-full h-full flex items-center justify-center ${thumbnail ? 'hidden' : ''}`}>
+            <SourceIcon className={`h-6 w-6 ${getSourceColor()}`} />
           </div>
-          
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm leading-tight truncate group-hover:text-primary transition-smooth">
-                  {title}
-                </h3>
-                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0 mr-4">
+              <h3 
+                className="font-semibold text-foreground truncate cursor-pointer hover:text-primary transition-colors"
+                onClick={handleTitleClick}
+              >
+                {title}
+              </h3>
+              {summary && (
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                   {summary}
                 </p>
-                <div className="flex items-center space-x-4 mt-2">
-                  <div className="flex items-center space-x-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{createdAt}</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    <SourceIcon className="h-3 w-3 mr-1" />
-                    {source}
-                  </Badge>
-                  <div className={`h-2 w-2 rounded-full ${getStatusColor(processingStatus)}`} />
-                </div>
-              </div>
-              
-              {/* Actions */}
-              <div className="flex items-center space-x-1 ml-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth ${is_favorite ? 'text-yellow-500 opacity-100' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }}
+              )}
+              <div className="flex items-center space-x-2 mt-2">
+                <Badge variant="outline" className="text-xs">
+                  <SourceIcon className="h-3 w-3 mr-1" />
+                  {source}
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(url, '_blank')}
+                  className="text-xs h-6"
                 >
-                  <Star className={`h-3 w-3 ${is_favorite ? 'fill-current' : ''}`} />
+                  {getActionText()}
                 </Button>
-                {onAddToCollection && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
-                    onClick={(e) => { e.stopPropagation(); onAddToCollection(); }}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth text-red-500"
-                  onClick={(e) => { e.stopPropagation(); deleteContent(id); }}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-                {url && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
-                    onClick={(e) => { e.stopPropagation(); window.open(url, '_blank'); }}
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                  </Button>
-                )}
               </div>
+            </div>
+
+            {/* Actions - visible on hover */}
+            <div className={`flex items-center space-x-1 transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleFavorite}
+                className="h-8 w-8 p-0"
+              >
+                <Heart className={`h-4 w-4 ${is_favorite ? 'text-red-500 fill-current' : ''}`} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleAddToCollection}
+                className="h-8 w-8 p-0"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              {processingStatus === "completed" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAIInsights}
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit3 className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
+  // Grid view
   return (
-    <Card className="group relative p-0 border-card-border bg-gradient-card hover:shadow-medium hover:-translate-y-1 transition-smooth cursor-pointer overflow-hidden">
-      {/* Header with Thumbnail/Status */}
-      <div className="relative h-32 bg-gradient-to-br from-muted to-accent/20 flex items-center justify-center">
+    <div 
+      className="group bg-card border border-card-border rounded-lg overflow-hidden hover:shadow-lg transition-smooth cursor-pointer relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Favorite Star - Top Right on Hover */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleFavorite}
+        className={`absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-white/80 backdrop-blur-sm transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+      >
+        <Heart className={`h-4 w-4 ${is_favorite ? 'text-red-500 fill-current' : ''}`} />
+      </Button>
+
+      {/* Header with Thumbnail */}
+      <div className="relative h-32 bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
         {thumbnail ? (
           <img 
             src={thumbnail} 
             alt={title}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
           />
-        ) : (
-          <div className="flex flex-col items-center space-y-2 text-muted-foreground">
-            <SourceIcon className="h-8 w-8" />
-            <span className="text-xs capitalize">{source}</span>
-          </div>
-        )}
-        
-        {/* Processing Status Indicator */}
-        <div className={`absolute top-3 right-3 h-3 w-3 rounded-full ${getStatusColor(processingStatus)}`}>
-          {processingStatus === "processing" && (
-            <div className="absolute inset-0 rounded-full bg-current animate-ping" />
-          )}
+        ) : null}
+        <div className={`absolute inset-0 flex items-center justify-center ${thumbnail ? 'hidden' : ''}`}>
+          <SourceIcon className={`h-8 w-8 ${getSourceColor()}`} />
         </div>
-
+        
         {/* Source Badge */}
-        <Badge 
-          variant="secondary" 
-          className="absolute bottom-3 left-3 text-xs bg-card/80 backdrop-blur-sm"
-        >
-          <SourceIcon className="h-3 w-3 mr-1" />
-          {source === "web" ? "Article" : source}
-        </Badge>
+        <div className="absolute top-2 left-2">
+          <Badge variant="secondary" className="text-xs bg-white/80 backdrop-blur-sm">
+            <SourceIcon className="h-3 w-3 mr-1" />
+            {source}
+          </Badge>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
-        {/* Title */}
-        <h3 className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-smooth">
+      <div className="p-4">
+        <h3 
+          className="font-semibold text-foreground mb-2 line-clamp-2 cursor-pointer hover:text-primary transition-colors"
+          onClick={handleTitleClick}
+        >
           {title}
         </h3>
+        
+        {summary && (
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+            {summary}
+          </p>
+        )}
 
-        {/* Summary */}
-        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-          {summary}
-        </p>
-
-        {/* Key Takeaways (if available) */}
-        {keyTakeaways && keyTakeaways.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center space-x-1">
-              <Zap className="h-3 w-3 text-primary" />
-              <span className="text-xs font-medium text-primary">AI Insights</span>
-            </div>
-            <ul className="space-y-1">
+        {/* AI Insights */}
+        {processingStatus === "completed" && keyTakeaways && keyTakeaways.length > 0 && (
+          <div className="mb-3">
+            <p className="text-xs font-medium text-muted-foreground mb-2">Key Insights</p>
+            <div className="space-y-1">
               {keyTakeaways.slice(0, 2).map((takeaway, index) => (
-                <li key={index} className="text-xs text-muted-foreground flex items-start space-x-1">
-                  <span className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                  <span className="line-clamp-2">{takeaway}</span>
-                </li>
+                <p key={index} className="text-xs text-muted-foreground line-clamp-1">
+                  • {takeaway}
+                </p>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1">
-          {tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs px-2 py-0 h-5">
-              {tag}
-            </Badge>
-          ))}
-          {tags.length > 3 && (
-            <Badge variant="outline" className="text-xs px-2 py-0 h-5 text-muted-foreground">
-              +{tags.length - 3}
-            </Badge>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-card-border/50">
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>{createdAt}</span>
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {tags.slice(0, 3).map((tag) => (
+              <Badge key={tag} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+            {tags.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{tags.length - 3}
+              </Badge>
+            )}
           </div>
+        )}
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(url, '_blank')}
+            className="text-xs"
+          >
+            {getActionText()}
+          </Button>
           
           <div className="flex items-center space-x-1">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth ${is_favorite ? 'text-yellow-500 opacity-100' : ''}`}
-              onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }}
-            >
-              <Star className={`h-3 w-3 ${is_favorite ? 'fill-current' : ''}`} />
-            </Button>
-            {onAddToCollection && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
-                onClick={(e) => { e.stopPropagation(); onAddToCollection(); }}
+            {processingStatus === "completed" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleAIInsights}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                title="Generate AI Insights"
               >
-                <Plus className="h-3 w-3" />
+                <Edit3 className="h-4 w-4" />
               </Button>
             )}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth text-red-500"
-              onClick={(e) => { e.stopPropagation(); deleteContent(id); }}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleAddToCollection}
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
             >
-              <Trash2 className="h-3 w-3" />
+              <Plus className="h-4 w-4" />
             </Button>
-            {url && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-smooth"
-                onClick={(e) => { e.stopPropagation(); window.open(url, '_blank'); }}
-              >
-                <ExternalLink className="h-3 w-3" />
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

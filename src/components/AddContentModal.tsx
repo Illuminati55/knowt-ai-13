@@ -85,9 +85,6 @@ const AddContentModal = ({ isOpen, onClose }: AddContentModalProps) => {
                 </p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </DialogHeader>
 

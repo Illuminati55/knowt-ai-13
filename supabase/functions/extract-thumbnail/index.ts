@@ -51,12 +51,12 @@ serve(async (req) => {
     }
     // Medium articles
     else if (url.includes('medium.com')) {
-      thumbnailUrl = await extractGenericThumbnail(url);
+      thumbnailUrl = await extractMediumThumbnail(url);
       if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('medium');
     }
     // Substack articles
     else if (url.includes('substack.com')) {
-      thumbnailUrl = await extractGenericThumbnail(url);
+      thumbnailUrl = await extractSubstackThumbnail(url);
       if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('substack');
     }
     // Dev.to articles
@@ -207,6 +207,67 @@ async function extractTwitterThumbnail(url: string): Promise<string | null> {
     console.error('Error extracting Twitter thumbnail:', error);
     return null;
   }
+}
+
+async function extractMediumThumbnail(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    
+    if (!response.ok) return null;
+    
+    const html = await response.text();
+    
+    // Try Medium's featured image
+    let match = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
+    if (match && isValidImageUrl(match[1])) {
+      return resolveUrl(match[1], url);
+    }
+    
+    // Try article image
+    match = html.match(/<img[^>]+class="[^"]*graf-image[^"]*"[^>]+src="([^"]+)"/);
+    if (match && isValidImageUrl(match[1])) {
+      return resolveUrl(match[1], url);
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error extracting Medium thumbnail:', error);
+    return null;
+  }
+}
+
+async function extractSubstackThumbnail(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    
+    if (!response.ok) return null;
+    
+    const html = await response.text();
+    
+    // Try Substack's featured image
+    let match = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
+    if (match && isValidImageUrl(match[1])) {
+      return resolveUrl(match[1], url);
+    }
+    
+    // Try cover image
+    match = html.match(/<img[^>]+class="[^"]*cover-image[^"]*"[^>]+src="([^"]+)"/);
+    if (match && isValidImageUrl(match[1])) {
+      return resolveUrl(match[1], url);
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error extracting Substack thumbnail:', error);
+    return null;
 }
 
 async function extractGenericThumbnail(url: string): Promise<string | null> {
