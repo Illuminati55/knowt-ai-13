@@ -7,6 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from "./AuthProvider";
 import AddContentModal from "./AddContentModal";
 import NotificationPanel from "./NotificationPanel";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Header = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -65,6 +66,8 @@ const Header = () => {
               <Bell className="h-4 w-4" />
               <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-primary" />
             </Button>
+
+            <ThemeToggle />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

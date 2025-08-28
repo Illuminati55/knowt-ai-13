@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutGrid, List, Filter, SortAsc, Plus } from "lucide-react";
+import { LayoutGrid, List, Filter, SortAsc, Plus, Grid3X3, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -7,18 +7,27 @@ import { useContent, ContentItem } from "@/hooks/useContent";
 import ContentCard from "./ContentCard";
 import CreateCollectionModal from "./CreateCollectionModal";
 import AddToCollectionModal from "./AddToCollectionModal";
+import AIInsightsModal from "./AIInsightsModal";
 
 interface DashboardProps {
   activeTab?: string;
 }
 
 const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "tiles">("grid");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [isCreateCollectionOpen, setIsCreateCollectionOpen] = useState(false);
   const [addToCollectionContent, setAddToCollectionContent] = useState<string | null>(null);
+  const [showCardSettings, setShowCardSettings] = useState(false);
+  const [isAIInsightsOpen, setIsAIInsightsOpen] = useState(false);
+  const [cardSettings, setCardSettings] = useState({
+    showSummary: true,
+    showTags: true,
+    showKeyTakeaways: true,
+    showSource: true,
+  });
   const { content, loading } = useContent();
 
   const [selectedSource, setSelectedSource] = useState("all");
@@ -141,7 +150,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Your Knowledge Base
+              Curator AI
             </h1>
             <p className="text-muted-foreground mt-1">
               {content.length} items curated and organized by AI
@@ -219,20 +228,43 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             >
               {sortOrder === "asc" ? "↑" : "↓"}
             </Button>
+            
+            {viewMode === "grid" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCardSettings(!showCardSettings)}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Customize
+              </Button>
+            )}
+            
             <div className="flex items-center border border-border rounded-lg p-1">
               <Button
                 variant={viewMode === "grid" ? "secondary" : "ghost"}
                 size="sm"
                 className="h-7 w-7 p-0"
                 onClick={() => setViewMode("grid")}
+                title="Grid View"
               >
                 <LayoutGrid className="h-3 w-3" />
+              </Button>
+              <Button
+                variant={viewMode === "tiles" ? "secondary" : "ghost"}
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => setViewMode("tiles")}
+                title="Tile View"
+              >
+                <Grid3X3 className="h-3 w-3" />
               </Button>
               <Button
                 variant={viewMode === "list" ? "secondary" : "ghost"}
                 size="sm"
                 className="h-7 w-7 p-0"
                 onClick={() => setViewMode("list")}
+                title="List View"
               >
                 <List className="h-3 w-3" />
               </Button>
@@ -260,6 +292,51 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             </Button>
           ))}
         </div>
+
+        {/* Card Customization Panel */}
+        {showCardSettings && viewMode === "grid" && (
+          <div className="p-4 bg-card border border-border rounded-lg">
+            <h3 className="font-medium mb-3">Customize Card Display</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cardSettings.showSummary}
+                  onChange={(e) => setCardSettings(prev => ({ ...prev, showSummary: e.target.checked }))}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">Summary</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cardSettings.showTags}
+                  onChange={(e) => setCardSettings(prev => ({ ...prev, showTags: e.target.checked }))}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">Tags</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cardSettings.showKeyTakeaways}
+                  onChange={(e) => setCardSettings(prev => ({ ...prev, showKeyTakeaways: e.target.checked }))}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">Key Insights</span>
+              </label>
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={cardSettings.showSource}
+                  onChange={(e) => setCardSettings(prev => ({ ...prev, showSource: e.target.checked }))}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">Source Badge</span>
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content Grid */}
@@ -274,6 +351,8 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
         <div className={`
           ${viewMode === "grid" 
             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" 
+            : viewMode === "tiles"
+            ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3"
             : "space-y-3"
           }
         `}>
@@ -287,11 +366,9 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
               keyTakeaways={item.key_takeaways}
               thumbnail={item.thumbnail_url}
               viewMode={viewMode}
+              cardSettings={cardSettings}
               onAddToCollection={() => setAddToCollectionContent(item.id)}
-              onAIInsights={() => {
-                // You can add AI Insights modal logic here
-                console.log('AI Insights for:', item.id);
-              }}
+              onAIInsights={() => setIsAIInsightsOpen(true)}
             />
           ))}
         </div>
@@ -321,6 +398,12 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
         isOpen={!!addToCollectionContent}
         onClose={() => setAddToCollectionContent(null)}
         contentId={addToCollectionContent || ''}
+      />
+
+      {/* AI Insights Modal */}
+      <AIInsightsModal 
+        isOpen={isAIInsightsOpen}
+        onClose={() => setIsAIInsightsOpen(false)}
       />
 
     </main>

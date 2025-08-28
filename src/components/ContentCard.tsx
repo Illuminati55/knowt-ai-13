@@ -17,7 +17,13 @@ export interface ContentCardProps {
   thumbnail?: string;
   keyTakeaways?: string[];
   is_favorite: boolean;
-  viewMode: "grid" | "list";
+  viewMode: "grid" | "list" | "tiles";
+  cardSettings?: {
+    showSummary: boolean;
+    showTags: boolean;
+    showKeyTakeaways: boolean;
+    showSource: boolean;
+  };
   onAddToCollection: () => void;
   onAIInsights?: () => void;
 }
@@ -35,6 +41,12 @@ const ContentCard = ({
   keyTakeaways,
   is_favorite,
   viewMode,
+  cardSettings = {
+    showSummary: true,
+    showTags: true,
+    showKeyTakeaways: true,
+    showSource: true,
+  },
   onAddToCollection,
   onAIInsights,
 }: ContentCardProps) => {
@@ -110,6 +122,61 @@ const ContentCard = ({
   };
 
   const SourceIcon = getSourceIcon();
+
+  // Tiles view - minimal view with just image and title
+  if (viewMode === "tiles") {
+    return (
+      <div 
+        className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-smooth cursor-pointer aspect-square relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleTitleClick}
+      >
+        {/* Favorite Star - Top Right on Hover */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleFavorite}
+          className={`absolute top-1 right-1 z-10 h-6 w-6 p-0 bg-black/20 backdrop-blur-sm transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <Heart className={`h-3 w-3 ${is_favorite ? 'text-red-500 fill-current' : 'text-white'}`} />
+        </Button>
+
+        {/* Image */}
+        <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted/50">
+          {thumbnail ? (
+            <img 
+              src={thumbnail} 
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <div className={`absolute inset-0 flex items-center justify-center ${thumbnail ? 'hidden' : ''}`}>
+            <SourceIcon className={`h-6 w-6 ${getSourceColor()}`} />
+          </div>
+        </div>
+
+        {/* Title Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+          <h3 className="text-white text-xs font-medium line-clamp-2 leading-tight">
+            {title}
+          </h3>
+        </div>
+
+        {/* Source Badge */}
+        <div className="absolute top-1 left-1">
+          <Badge variant="secondary" className="text-xs bg-black/20 text-white backdrop-blur-sm border-0 h-5">
+            <SourceIcon className="h-2 w-2 mr-1" />
+            {source}
+          </Badge>
+        </div>
+      </div>
+    );
+  }
 
   if (viewMode === "list") {
     return (
@@ -213,7 +280,7 @@ const ContentCard = ({
   // Grid view
   return (
     <div 
-      className="group bg-card border border-card-border rounded-lg overflow-hidden hover:shadow-lg transition-smooth cursor-pointer relative"
+      className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-smooth cursor-pointer relative flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -245,16 +312,18 @@ const ContentCard = ({
         </div>
         
         {/* Source Badge */}
-        <div className="absolute top-2 left-2">
-          <Badge variant="secondary" className="text-xs bg-white/80 backdrop-blur-sm">
-            <SourceIcon className="h-3 w-3 mr-1" />
-            {source}
-          </Badge>
-        </div>
+        {cardSettings.showSource && (
+          <div className="absolute top-2 left-2">
+            <Badge variant="secondary" className="text-xs bg-white/80 backdrop-blur-sm">
+              <SourceIcon className="h-3 w-3 mr-1" />
+              {source}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <h3 
           className="font-semibold text-foreground mb-2 line-clamp-2 cursor-pointer hover:text-primary transition-colors"
           onClick={handleTitleClick}
@@ -262,14 +331,14 @@ const ContentCard = ({
           {title}
         </h3>
         
-        {summary && (
+        {cardSettings.showSummary && summary && (
           <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
             {summary}
           </p>
         )}
 
         {/* AI Insights */}
-        {processingStatus === "completed" && keyTakeaways && keyTakeaways.length > 0 && (
+        {cardSettings.showKeyTakeaways && processingStatus === "completed" && keyTakeaways && keyTakeaways.length > 0 && (
           <div className="mb-3">
             <p className="text-xs font-medium text-muted-foreground mb-2">Key Insights</p>
             <div className="space-y-1">
@@ -283,7 +352,7 @@ const ContentCard = ({
         )}
 
         {/* Tags */}
-        {tags && tags.length > 0 && (
+        {cardSettings.showTags && tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {tags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
@@ -298,8 +367,11 @@ const ContentCard = ({
           </div>
         )}
 
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between">
+        {/* Spacer to push footer to bottom */}
+        <div className="flex-1"></div>
+
+        {/* Footer Actions - Always at bottom */}
+        <div className="flex items-center justify-between mt-auto pt-3">
           <Button
             variant="outline"
             size="sm"
@@ -316,7 +388,7 @@ const ContentCard = ({
                 size="sm"
                 onClick={handleAIInsights}
                 className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
-                title="Generate AI Insights"
+                title="Key Insights"
               >
                 <Edit3 className="h-4 w-4" />
               </Button>
