@@ -27,26 +27,47 @@ serve(async (req) => {
     console.log('Extracting thumbnail for URL:', url);
 
     let thumbnailUrl: string | null = null;
+    const domain = getDomainFromUrl(url);
 
     // YouTube thumbnail extraction
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
       thumbnailUrl = extractYouTubeThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('youtube');
     }
     // LinkedIn posts
     else if (url.includes('linkedin.com')) {
       thumbnailUrl = await extractLinkedInThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('linkedin');
     }
     // Vimeo videos
     else if (url.includes('vimeo.com')) {
       thumbnailUrl = await extractVimeoThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('vimeo');
     }
     // Twitter/X posts
     else if (url.includes('twitter.com') || url.includes('x.com')) {
       thumbnailUrl = await extractTwitterThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('twitter');
+    }
+    // Medium articles
+    else if (url.includes('medium.com')) {
+      thumbnailUrl = await extractGenericThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('medium');
+    }
+    // Substack articles
+    else if (url.includes('substack.com')) {
+      thumbnailUrl = await extractGenericThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('substack');
+    }
+    // Dev.to articles
+    else if (url.includes('dev.to')) {
+      thumbnailUrl = await extractGenericThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon('devto');
     }
     // Generic web scraping for articles and other content
     else {
       thumbnailUrl = await extractGenericThumbnail(url);
+      if (!thumbnailUrl) thumbnailUrl = getDomainFallbackIcon(domain);
     }
 
     console.log('Extracted thumbnail URL:', thumbnailUrl);
@@ -284,4 +305,43 @@ function resolveUrl(imageUrl: string, baseUrl: string): string {
     console.error('Error resolving URL:', error);
     return imageUrl;
   }
+}
+
+function getDomainFromUrl(url: string): string {
+  try {
+    const domain = new URL(url).hostname.toLowerCase();
+    return domain.replace('www.', '');
+  } catch {
+    return 'generic';
+  }
+}
+
+function getDomainFallbackIcon(domain: string): string {
+  const fallbackIcons: Record<string, string> = {
+    'youtube': 'https://img.icons8.com/color/96/youtube-play.png',
+    'linkedin': 'https://img.icons8.com/color/96/linkedin.png',
+    'twitter': 'https://img.icons8.com/color/96/twitter--v1.png',
+    'vimeo': 'https://img.icons8.com/color/96/vimeo.png',
+    'medium': 'https://img.icons8.com/color/96/medium-monogram.png',
+    'substack': 'https://img.icons8.com/color/96/note.png',
+    'devto': 'https://img.icons8.com/color/96/dev.png',
+    'github.com': 'https://img.icons8.com/color/96/github.png',
+    'stackoverflow.com': 'https://img.icons8.com/color/96/stackoverflow.png',
+    'reddit.com': 'https://img.icons8.com/color/96/reddit.png',
+    'hackernews.ycombinator.com': 'https://img.icons8.com/color/96/hacker-news.png',
+    'news.ycombinator.com': 'https://img.icons8.com/color/96/hacker-news.png',
+    'techcrunch.com': 'https://img.icons8.com/color/96/news.png',
+    'wired.com': 'https://img.icons8.com/color/96/news.png',
+    'theverge.com': 'https://img.icons8.com/color/96/news.png',
+    'arstechnica.com': 'https://img.icons8.com/color/96/news.png',
+    'forbes.com': 'https://img.icons8.com/color/96/news.png',
+    'bloomberg.com': 'https://img.icons8.com/color/96/news.png',
+    'cnn.com': 'https://img.icons8.com/color/96/news.png',
+    'bbc.com': 'https://img.icons8.com/color/96/news.png',
+    'nytimes.com': 'https://img.icons8.com/color/96/news.png',
+    'wsj.com': 'https://img.icons8.com/color/96/news.png',
+    'generic': 'https://img.icons8.com/color/96/web.png'
+  };
+  
+  return fallbackIcons[domain] || fallbackIcons['generic'];
 }

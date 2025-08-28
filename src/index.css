@@ -12,16 +12,16 @@
     --background: 248 250 252; /* slate-50 */
     --foreground: 222 34% 12%;
 
-    /* AI-Themed Purple/Blue Palette */
-    --primary: 262 83% 58%; /* Purple-500 */
+    /* Vibrant AI-Themed Color Palette */
+    --primary: 280 100% 65%; /* Vibrant Purple */
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 262 100% 75%;
+    --primary-glow: 280 100% 80%;
     
-    --secondary: 217 91% 60%; /* Blue-500 */
+    --secondary: 200 95% 58%; /* Vibrant Cyan */
     --secondary-foreground: 0 0% 100%;
     
-    --accent: 290 100% 88%; /* Light purple */
-    --accent-foreground: 262 83% 25%;
+    --accent: 320 85% 75%; /* Vibrant Pink-Purple */
+    --accent-foreground: 320 85% 25%;
 
     /* Surface Colors */
     --card: 0 0% 100%;
@@ -55,18 +55,21 @@
     --completed: 142 71% 45%;
     --failed: 0 84% 60%;
 
-    /* Beautiful Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(217 91% 60%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(290 100% 88%) 0%, hsl(262 83% 75%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(217 91% 60%) 50%, hsl(290 100% 75%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 100%);
+    /* Vibrant Beautiful Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(280 100% 65%) 0%, hsl(200 95% 58%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(320 85% 75%) 0%, hsl(280 100% 80%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(280 100% 65%) 0%, hsl(200 95% 58%) 50%, hsl(320 85% 75%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(280 100% 98%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(280 100% 98%) 0%, hsl(0 0% 100%) 100%);
 
-    /* Shadows & Effects */
-    --shadow-soft: 0 1px 3px 0 hsl(220 43% 11% / 0.1), 0 1px 2px 0 hsl(220 43% 11% / 0.06);
-    --shadow-medium: 0 4px 6px -1px hsl(220 43% 11% / 0.1), 0 2px 4px -1px hsl(220 43% 11% / 0.06);
-    --shadow-large: 0 10px 15px -3px hsl(220 43% 11% / 0.1), 0 4px 6px -2px hsl(220 43% 11% / 0.05);
-    --shadow-glow: 0 0 30px hsl(262 83% 58% / 0.3);
-    --shadow-ai: 0 0 40px hsl(262 83% 58% / 0.2);
+    /* Enhanced Shadows & Effects */
+    --shadow-soft: 0 1px 3px 0 hsl(280 100% 65% / 0.1), 0 1px 2px 0 hsl(280 100% 65% / 0.06);
+    --shadow-medium: 0 4px 6px -1px hsl(280 100% 65% / 0.1), 0 2px 4px -1px hsl(280 100% 65% / 0.06);
+    --shadow-large: 0 10px 15px -3px hsl(280 100% 65% / 0.1), 0 4px 6px -2px hsl(280 100% 65% / 0.05);
+    --shadow-glow: 0 0 30px hsl(280 100% 65% / 0.4);
+    --shadow-ai: 0 0 40px hsl(280 100% 65% / 0.3);
+    --shadow-card: 0 4px 20px hsl(280 100% 65% / 0.1);
+    --shadow-hover: 0 8px 30px hsl(280 100% 65% / 0.2);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

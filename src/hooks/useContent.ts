@@ -245,11 +245,11 @@ export const useContent = () => {
     fetchCollections();
   }, [user]);
 
-  // Set up real-time subscription
+  // Set up real-time subscriptions
   useEffect(() => {
     if (!user) return;
 
-    const channel = supabase
+    const contentChannel = supabase
       .channel('content-changes')
       .on(
         'postgres_changes',
@@ -265,10 +265,66 @@ export const useContent = () => {
       )
       .subscribe();
 
+    const collectionsChannel = supabase
+      .channel('collections-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'collections',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchCollections();
+        }
+      )
+      .subscribe();
+
+    const collectionItemsChannel = supabase
+      .channel('collection-items-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'collection_items'
+        },
+        () => {
+          fetchCollections();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(contentChannel);
+      supabase.removeChannel(collectionsChannel);
+      supabase.removeChannel(collectionItemsChannel);
     };
   }, [user]);
+
+  const addToCollection = async (contentId: string, collectionId: string) => {
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      const { error } = await supabase
+        .from('collection_items')
+        .insert({
+          content_id: contentId,
+          collection_id: collectionId
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Added to collection",
+        description: "Item has been added to your collection.",
+      });
+    } catch (error: any) {
+      console.error('Error adding to collection:', error);
+      throw error;
+    }
+  };
 
   return {
     content,
@@ -278,6 +334,7 @@ export const useContent = () => {
     toggleFavorite,
     deleteContent,
     createCollection,
+    addToCollection,
     refetch: fetchContent,
   };
 };

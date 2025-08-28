@@ -21,6 +21,9 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
   const [addToCollectionContent, setAddToCollectionContent] = useState<string | null>(null);
   const { content, loading } = useContent();
 
+  const [selectedSource, setSelectedSource] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("");
+
   const filters = [
     { id: "all", label: "All Items", count: content.length },
     { id: "completed", label: "AI Processed", count: content.filter(item => item.processing_status === "completed").length },
@@ -31,6 +34,16 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       return daysDiff <= 7;
     }).length },
   ];
+
+  const sourceFilters = [
+    { id: "all", label: "All Sources" },
+    { id: "web", label: "Web Articles" },
+    { id: "youtube", label: "YouTube" },
+    { id: "linkedin", label: "LinkedIn" },
+    { id: "document", label: "Documents" },
+  ];
+
+  const allTags = Array.from(new Set(content.flatMap(item => item.tags || [])));
 
   // Filter items based on activeTab and selected filters
   const getFilteredItems = () => {
@@ -71,6 +84,16 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       items = items.filter(item => new Date(item.created_at) > createdDate);
     }
 
+    // Apply source filter
+    if (selectedSource !== "all") {
+      items = items.filter(item => item.source === selectedSource);
+    }
+
+    // Apply tag filter
+    if (selectedTag) {
+      items = items.filter(item => item.tags?.includes(selectedTag));
+    }
+
     // Apply sorting
     items.sort((a, b) => {
       let aValue: any, bValue: any;
@@ -106,13 +129,13 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
   const filteredItems = getFilteredItems();
 
   return (
-    <main className="flex-1 p-6 space-y-6 max-h-screen overflow-y-auto">
+    <main className="flex-1 p-3 md:p-6 space-y-4 md:space-y-6 max-h-screen overflow-y-auto">
       
       {/* Header Section */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Your Knowledge Base
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -120,29 +143,49 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
             </p>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <Filter className="h-4 w-4 mr-2" />
-                  Filter
+                  Source
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                  All Items
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("completed")}>
-                  AI Processed
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("processing")}>
-                  Processing
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedFilter("recent")}>
-                  Recent (7 days)
-                </DropdownMenuItem>
+                {sourceFilters.map(source => (
+                  <DropdownMenuItem 
+                    key={source.id} 
+                    onClick={() => setSelectedSource(source.id)}
+                  >
+                    {source.label}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {allTags.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Tags
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="max-h-48 overflow-y-auto">
+                  <DropdownMenuItem onClick={() => setSelectedTag("")}>
+                    All Tags
+                  </DropdownMenuItem>
+                  {allTags.map(tag => (
+                    <DropdownMenuItem 
+                      key={tag} 
+                      onClick={() => setSelectedTag(tag)}
+                    >
+                      {tag}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -193,7 +236,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {filters.map((filter) => (
             <Button
               key={filter.id}
@@ -225,7 +268,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       ) : (
         <div className={`
           ${viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" 
             : "space-y-3"
           }
         `}>
