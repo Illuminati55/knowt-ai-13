@@ -47,6 +47,8 @@ serve(async (req) => {
 
     // Fetch content from URL
     let pageContent = '';
+    let useWebSearch = false;
+    
     try {
       const response = await fetch(url);
       pageContent = await response.text();
@@ -59,15 +61,35 @@ serve(async (req) => {
         .replace(/\s+/g, ' ')
         .trim()
         .slice(0, 8000); // Limit content length
+
+      // Check if content is just copyright/footer info (common with YouTube)
+      const copyrightIndicators = [
+        'copyright information',
+        'contact information', 
+        'privacy policy',
+        'terms of service',
+        'youtube footer',
+        'standard youtube footer',
+        'all rights reserved'
+      ];
+      
+      const hasOnlyCopyrightInfo = copyrightIndicators.some(indicator => 
+        pageContent.toLowerCase().includes(indicator)
+      ) && pageContent.length < 500;
+      
+      if (hasOnlyCopyrightInfo) {
+        console.log('Detected copyright/footer content, switching to web search');
+        useWebSearch = true;
+      }
         
     } catch (error) {
       console.error('Error fetching content:', error);
-      throw new Error('Failed to fetch content from URL');
+      useWebSearch = true; // Fallback to web search
     }
 
-    console.log('Content fetched, length:', pageContent.length);
+    console.log('Content fetched, length:', pageContent.length, 'useWebSearch:', useWebSearch);
 
-    // Analyze content with Gemini
+    // Analyze content with Gemini (with web search if needed)
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
       {
@@ -80,16 +102,27 @@ serve(async (req) => {
             {
               parts: [
                 {
-                  text: `Analyze the following content and provide a structured response in JSON format with these fields:
-                  - title: A clear, concise title for this content
-                  - summary: A 2-3 sentence summary
-                  - tags: An array of 3-5 relevant tags/keywords
-                  - key_takeaways: An array of 2-4 key insights or important points
-                  - source_type: Determine if this is "web", "youtube", "linkedin", or "document"
+                  text: useWebSearch 
+                    ? `Search the web for information about this URL: ${url}
+                       
+                       Then provide a structured response in JSON format with these fields:
+                       - title: A clear, concise title for this content
+                       - summary: A 2-3 sentence summary of what this content is about
+                       - tags: An array of 3-5 relevant tags/keywords
+                       - key_takeaways: An array of 2-4 key insights or important points
+                       - source_type: Determine if this is "web", "youtube", "linkedin", "medium", "substack", or "document"
+                       
+                       Respond with valid JSON only.`
+                    : `Analyze the following content and provide a structured response in JSON format with these fields:
+                       - title: A clear, concise title for this content
+                       - summary: A 2-3 sentence summary
+                       - tags: An array of 3-5 relevant tags/keywords
+                       - key_takeaways: An array of 2-4 key insights or important points
+                       - source_type: Determine if this is "web", "youtube", "linkedin", "medium", "substack", or "document"
 
-                  Content: ${pageContent}
-                  
-                  Respond with valid JSON only.`
+                       Content: ${pageContent}
+                       
+                       Respond with valid JSON only.`
                 }
               ]
             }
@@ -99,7 +132,12 @@ serve(async (req) => {
             topK: 32,
             topP: 1,
             maxOutputTokens: 1000,
-          }
+          },
+          tools: useWebSearch ? [
+            {
+              googleSearchRetrieval: {}
+            }
+          ] : []
         })
       }
     );
