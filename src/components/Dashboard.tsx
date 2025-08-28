@@ -289,7 +289,7 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
       )}
 
       {/* Empty State */}
-      {filteredItems.length === 0 && (
+      {filteredItems.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-4">
             <LayoutGrid className="h-8 w-8 text-muted-foreground" />
