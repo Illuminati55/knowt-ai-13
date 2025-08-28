@@ -25,9 +25,10 @@ interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onCreateCollection: () => void;
+  onClose?: () => void;
 }
 
-const Sidebar = ({ activeTab, onTabChange, onCreateCollection }: SidebarProps) => {
+const Sidebar = ({ activeTab, onTabChange, onCreateCollection, onClose }: SidebarProps) => {
   const [expandedSections, setExpandedSections] = useState(["collections"]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isInsightsModalOpen, setIsInsightsModalOpen] = useState(false);

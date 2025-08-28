@@ -127,7 +127,7 @@ const ContentCard = ({
   if (viewMode === "tiles") {
     return (
       <div 
-        className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-smooth cursor-pointer aspect-square relative"
+        className="group bg-card border rounded-lg overflow-hidden hover:shadow-clean transition-smooth cursor-pointer aspect-square relative"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleTitleClick}
@@ -137,9 +137,9 @@ const ContentCard = ({
           variant="ghost"
           size="sm"
           onClick={handleFavorite}
-          className={`absolute top-1 right-1 z-10 h-6 w-6 p-0 bg-black/20 backdrop-blur-sm transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute top-1 right-1 z-10 h-5 lg:h-6 w-5 lg:w-6 p-0 bg-black/20 backdrop-blur-sm transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
         >
-          <Heart className={`h-3 w-3 ${is_favorite ? 'text-red-500 fill-current' : 'text-white'}`} />
+          <Heart className={`h-2 lg:h-3 w-2 lg:w-3 ${is_favorite ? 'text-red-500 fill-current' : 'text-white'}`} />
         </Button>
 
         {/* Image */}
@@ -156,12 +156,12 @@ const ContentCard = ({
             />
           ) : null}
           <div className={`absolute inset-0 flex items-center justify-center ${thumbnail ? 'hidden' : ''}`}>
-            <SourceIcon className={`h-6 w-6 ${getSourceColor()}`} />
+            <SourceIcon className={`h-4 lg:h-6 w-4 lg:w-6 ${getSourceColor()}`} />
           </div>
         </div>
 
         {/* Title Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1 lg:p-2">
           <h3 className="text-white text-xs font-medium line-clamp-2 leading-tight">
             {title}
           </h3>
@@ -169,9 +169,9 @@ const ContentCard = ({
 
         {/* Source Badge */}
         <div className="absolute top-1 left-1">
-          <Badge variant="secondary" className="text-xs bg-black/20 text-white backdrop-blur-sm border-0 h-5">
+          <Badge variant="secondary" className="text-xs bg-black/20 text-white backdrop-blur-sm border-0 h-4 lg:h-5">
             <SourceIcon className="h-2 w-2 mr-1" />
-            {source}
+            <span className="hidden lg:inline">{source}</span>
           </Badge>
         </div>
       </div>
@@ -181,12 +181,12 @@ const ContentCard = ({
   if (viewMode === "list") {
     return (
       <div 
-        className="group flex items-center space-x-4 p-4 bg-card border rounded-lg hover:shadow-clean transition-smooth"
+        className="group flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 bg-card border rounded-lg hover:shadow-clean transition-smooth"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Thumbnail */}
-        <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-muted overflow-hidden">
+        <div className="flex-shrink-0 w-12 h-12 lg:w-16 lg:h-16 rounded-lg bg-muted overflow-hidden">
           {thumbnail ? (
             <img 
               src={thumbnail} 
@@ -199,76 +199,76 @@ const ContentCard = ({
             />
           ) : null}
           <div className={`w-full h-full flex items-center justify-center ${thumbnail ? 'hidden' : ''}`}>
-            <SourceIcon className={`h-6 w-6 ${getSourceColor()}`} />
+            <SourceIcon className={`h-4 lg:h-6 w-4 lg:w-6 ${getSourceColor()}`} />
           </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0 mr-4">
+            <div className="flex-1 min-w-0 mr-2 lg:mr-4">
               <h3 
-                className="font-semibold text-foreground truncate cursor-pointer hover:text-primary transition-colors"
+                className="font-medium lg:font-semibold text-foreground text-sm lg:text-base truncate cursor-pointer hover:text-primary transition-colors"
                 onClick={handleTitleClick}
               >
                 {title}
               </h3>
               {summary && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-xs lg:text-sm text-muted-foreground mt-1 line-clamp-2 hidden sm:block">
                   {summary}
                 </p>
               )}
               <div className="flex items-center space-x-2 mt-2">
                 <Badge variant="outline" className="text-xs">
                   <SourceIcon className="h-3 w-3 mr-1" />
-                  {source}
+                  <span className="hidden sm:inline">{source}</span>
                 </Badge>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => window.open(url, '_blank')}
-                  className="text-xs h-6"
+                  className="text-xs h-5 lg:h-6 px-2"
                 >
                   {getActionText()}
                 </Button>
               </div>
             </div>
 
-            {/* Actions - visible on hover */}
-            <div className={`flex items-center space-x-1 transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+            {/* Actions - visible on hover for desktop, always visible on mobile */}
+            <div className={`flex items-center space-x-1 transition-opacity ${isHovered || window.innerWidth < 768 ? 'opacity-100' : 'opacity-0'}`}>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleFavorite}
-                className="h-8 w-8 p-0"
+                className="h-6 lg:h-8 w-6 lg:w-8 p-0"
               >
-                <Heart className={`h-4 w-4 ${is_favorite ? 'text-red-500 fill-current' : ''}`} />
+                <Heart className={`h-3 lg:h-4 w-3 lg:w-4 ${is_favorite ? 'text-red-500 fill-current' : ''}`} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleAddToCollection}
-                className="h-8 w-8 p-0"
+                className="h-6 lg:h-8 w-6 lg:w-8 p-0"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 lg:h-4 w-3 lg:w-4" />
               </Button>
               {processingStatus === "completed" && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleAIInsights}
-                  className="h-8 w-8 p-0"
+                  className="h-6 lg:h-8 w-6 lg:w-8 p-0"
                 >
-                  <Edit3 className="h-4 w-4" />
+                  <Edit3 className="h-3 lg:h-4 w-3 lg:w-4" />
                 </Button>
               )}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleDelete}
-                className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                className="h-6 lg:h-8 w-6 lg:w-8 p-0 text-red-500 hover:text-red-700"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 lg:h-4 w-3 lg:w-4" />
               </Button>
             </div>
           </div>
@@ -323,16 +323,16 @@ const ContentCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-3 lg:p-4 flex flex-col flex-1">
         <h3 
-          className="font-semibold text-foreground mb-2 line-clamp-2 cursor-pointer hover:text-primary transition-colors"
+          className="font-medium lg:font-semibold text-foreground text-sm lg:text-base mb-2 line-clamp-2 cursor-pointer hover:text-primary transition-colors"
           onClick={handleTitleClick}
         >
           {title}
         </h3>
         
         {cardSettings.showSummary && summary && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+          <p className="text-xs lg:text-sm text-muted-foreground mb-3 line-clamp-2 lg:line-clamp-3">
             {summary}
           </p>
         )}
@@ -342,11 +342,18 @@ const ContentCard = ({
           <div className="mb-3">
             <p className="text-xs font-medium text-muted-foreground mb-2">Key Insights</p>
             <div className="space-y-1">
-              {keyTakeaways.slice(0, 2).map((takeaway, index) => (
+              {keyTakeaways.slice(0, 1).map((takeaway, index) => (
                 <p key={index} className="text-xs text-muted-foreground line-clamp-1">
                   • {takeaway}
                 </p>
               ))}
+              <div className="lg:block hidden">
+                {keyTakeaways.slice(1, 2).map((takeaway, index) => (
+                  <p key={index + 1} className="text-xs text-muted-foreground line-clamp-1">
+                    • {takeaway}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -354,16 +361,36 @@ const ContentCard = ({
         {/* Tags */}
         {cardSettings.showTags && tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
-            {tags.slice(0, 3).map((tag) => (
+            {tags.slice(0, 2).map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
                 {tag}
               </Badge>
             ))}
-            {tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
-                +{tags.length - 3}
+            <div className="hidden lg:flex lg:flex-wrap lg:gap-1">
+              {tags.slice(2, 3).map((tag) => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {tags.length > 3 && (
+                <Badge variant="outline" className="text-xs">
+                  +{tags.length - 3}
+                </Badge>
+              )}
+            </div>
+            {tags.length > 2 && (
+              <Badge variant="outline" className="text-xs lg:hidden">
+                +{tags.length - 2}
               </Badge>
             )}
+          </div>
+        )}
+
+        {/* Processing Status */}
+        {processingStatus === "processing" && (
+          <div className="mb-3 flex items-center text-xs text-muted-foreground">
+            <div className="h-3 w-3 rounded-full border border-primary border-t-transparent animate-spin mr-2" />
+            <span>AI processing...</span>
           </div>
         )}
 
@@ -376,7 +403,7 @@ const ContentCard = ({
             variant="outline"
             size="sm"
             onClick={() => window.open(url, '_blank')}
-            className="text-xs"
+            className="text-xs px-2 lg:px-3 h-6 lg:h-8"
           >
             {getActionText()}
           </Button>
@@ -387,27 +414,27 @@ const ContentCard = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleAIInsights}
-                className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                className="h-6 lg:h-8 w-6 lg:w-8 p-0 text-muted-foreground hover:text-primary"
                 title="AI Insights"
               >
-                <Edit3 className="h-4 w-4" />
+                <Edit3 className="h-3 lg:h-4 w-3 lg:w-4" />
               </Button>
             )}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleAddToCollection}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+              className="h-6 lg:h-8 w-6 lg:w-8 p-0 text-muted-foreground hover:text-primary"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3 lg:h-4 w-3 lg:w-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleDelete}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+              className="h-6 lg:h-8 w-6 lg:w-8 p-0 text-muted-foreground hover:text-red-500"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 lg:h-4 w-3 lg:w-4" />
             </Button>
           </div>
         </div>

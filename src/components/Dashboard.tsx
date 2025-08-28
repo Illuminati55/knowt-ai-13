@@ -341,10 +341,10 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
 
       {/* Content Grid */}
       {loading ? (
-        <div className="flex justify-center items-center py-12">
+        <div className="flex justify-center items-center py-8 lg:py-12">
           <div className="text-center">
-            <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading your content...</p>
+            <div className="h-6 lg:h-8 w-6 lg:w-8 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto mb-3 lg:mb-4" />
+            <p className="text-sm text-muted-foreground">Loading your content...</p>
           </div>
         </div>
       ) : (
@@ -376,12 +376,12 @@ const Dashboard = ({ activeTab = "dashboard" }: DashboardProps) => {
 
       {/* Empty State */}
       {filteredItems.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-4">
-            <LayoutGrid className="h-8 w-8 text-muted-foreground" />
+        <div className="text-center py-8 lg:py-12">
+          <div className="w-12 lg:w-16 h-12 lg:h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-3 lg:mb-4">
+            <LayoutGrid className="h-6 lg:h-8 w-6 lg:w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-2">No items found</h3>
-          <p className="text-muted-foreground">
+          <h3 className="text-base lg:text-lg font-medium mb-2">No items found</h3>
+          <p className="text-sm text-muted-foreground px-4">
             Try adjusting your filters or add some new content to get started.
           </p>
         </div>
