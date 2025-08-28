@@ -268,6 +268,7 @@ async function extractSubstackThumbnail(url: string): Promise<string | null> {
   } catch (error) {
     console.error('Error extracting Substack thumbnail:', error);
     return null;
+  }
 }
 
 async function extractGenericThumbnail(url: string): Promise<string | null> {
